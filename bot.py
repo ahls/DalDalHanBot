@@ -196,36 +196,37 @@ numTeams = 2
 servers = {} #들어가는 내용물  - > 서버 이름: [teams, unsassigned, numTeams]
 
 #재미로 넣은거
-property = ["완전 새것같은","괴이한","기괴한","금속재질의","챌린져의","브론즈의", "거대한","날카로운","위협적인","더러운","아름다운", "", "훌륭한", "멋진", "때가 낀", "어두운", "밝은", "뜨거운", "차가운", "길다란", "찰랑거리는", "엄청난", "작은", "귀여운", "못생긴"]
+property = ["각잡힌","정상적인","심술궃은","깔끔한","깨끗한","주름접힌", "주름없는","완전 새 것같은", "오래된","녹슨","빛바랜","괴이한","기괴한","금속재질의","아이언의","단단한","부드러운","굳센","유연한","챌린져의","브론즈의", "거대한","날카로운","위협적인","더러운","아름다운", "", "훌륭한", "멋진", "때가 낀", "어두운", "밝은", "뜨거운", "차가운", "길다란", "찰랑거리는", "엄청난", "작은", "귀여운", "못생긴"]
 soundProp = ["짧은", "큰", "알수없는", "듣기 거북한", "분노에 찬", "끔찍한", "엄청난", "형용할 수 없는", "구슬픈", "조그만", "한에 찬", "서러운"]
 
-weapon = ["둔기를","쇠빠따를","꽉 쥔 주먹을", "젓가락을", "새끼 손가락을", "십자가를", "갓 담근 김치를", "엘보를 ", "니킥을 ", "똥덩어리를 ", "연양갱을 "]
+weapon = ["둔기를","쇠빠따를","꽉 쥔 주먹을", "젓가락을", "새끼 손가락을", "십자가를", "갓 담근 김치를", "엘보를", "니킥을", "똥덩어리를", "연양갱을", "손끝을", "식칼을", "장미칼을", "짱돌을", "쇠파이프를","각목을"]
 body = ["명치에","관자놀이에","7번 척추뼈에","면상에","급소에", "인중에", "어깨에", "정강이에", "무릎에", "마빡에", "이마에"]
 method = ["개 쌔게 갈겼다.","휘둘렀다.", "내던졌다.", "후려쳤다", "정확히 찔렀다.", "터치했다.", "가볍게 문질렀다."]
-how = ["이상한 소리를 내며 " , "" ,"괴상한 자세로 ", "멋진 포즈와 함께 ", "눈물을 머금고 ", "분노에 가득차 ", "신이나서 ", "콧노래를 부르며 ", "찡찡대며 "]
+how = ["이상한 소리를 내며 " , "" ,"괴상한 자세로 ", "멋진 포즈와 함께 ", "눈물을 머금고 ", "분노에 가득차 ", "신이나서 ", "콧노래를 부르며 ", "찡찡대며 ", f"{random.choice(soundProp)} 휘파람을 부르며"]
 who = ["지나가던 개가", "당신이", "당신의 교수님이", "모든 것을 지켜보던 개발자가"]
 feature = ["눈매를 ","마음씨를 ", "얼굴을 ", "손을 ", "손톱을 ", "발톱을 ", "머리칼을 ", "심장을 ", "뇌를 ", "어깨를 ", "무릎을 ", "팔꿈치를 ", "이마를 "]
-describedFeature = f"{property[random.randrange(13)]} {feature[random.randrange(7)]}"
+describedFeature = f"{property[random.randrange(25)]} {feature[random.randrange(13)]}"
 featureEnding = ["소유한", "빼고 다 가진", "가지지 못한", "지닌", "가지고 있는", "보유한", "제외하고 자랑할게 없는", "자랑스럽게 생각하는"]
 featureJoins = [" 지녔으며 "," 가지고 있으며 ", " 소유했으며 ", " 가지진 못했지만 "," 보유했으며 ", " 가졌고 ", " 소유했고 ", " 탑재한 "]
 beginning = ["마법 주문을 외우자,", f"{random.choice(property)} {random.choice(weapon)} 달달한 봇의 {random.choice(body)} {random.choice(method)}.", "강렬한 눈빛으로 달달한 봇을 바라봤고,", "명령을 하자,", "힘을 방출하자,"]
-reaction = [f"{random.choice(soundProp)} 소리를 지르며", f"{random.choice(soundProp)} 단말마와 함께", "소리조차 지르지 못하고", f"당신에게 {random.choice(soundProp)} 저주를 퍼부으며", f"{random.choice(soundProp)} 소리로 울부짖으며",  "신비한 자세를 취하며", "온몸이 뒤틀리며"]
+reaction = [f"{random.choice(soundProp)} 소리를 지르며", f"{random.choice(soundProp)} 단말마와 함께", "소리조차 지르지 못하고", f"당신에게 {random.choice(soundProp)} 저주를 퍼부으며", f"{random.choice(soundProp)} 소리로 울부짖으며",  f"{random.choice(property)} 자세를 취하며", "온몸이 뒤틀리며"]
 ending = ["사라졌다.","원자 단위로 분해되었다.", "쓰러졌다.", "바스라졌다.", "먼지가 되었다.", "무지개 다리를 건넜다." , "죽었다.", "사망했다.","성불했다.", "분쇄되었다.", "신비해졌다.", "중국 공안당에게 잡혀갔다.", "모두의 기억속에서 잊혀졌다.", "눈물을 흘렸다.", "울었다." , "엄마에게 이르러 갔다.", "도망갔다.", "후퇴했다.", "몸을 웅크렸다.", "퍼엉 하고 터졌다.", "폭발했다."]
-
+propertyLen = len(property)
+featureLen = len(feature)
 
 def conjoinFeatures():
     numba = random.randrange(4)
     if(numba == 0):
         textToReturn = random.choice(property)
         return textToReturn
-    textToReturn = describedFeature
+    textToReturn = f"{property[random.randrange(propertyLen)]} {feature[random.randrange(featureLen)]}"
 
     while numba < 2:
         textToReturn += featureJoins[random.randrange(8)]
         if numba == 1:
             textToReturn += random.choice(property)
             return textToReturn
-        textToReturn += f"{property[random.randrange(25)]} {feature[random.randrange(13)]}"
+        textToReturn += f"{property[random.randrange(propertyLen)]} {feature[random.randrange(featureLen)]}"
         numba = random.randrange(4)
         
             
