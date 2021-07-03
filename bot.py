@@ -8,23 +8,18 @@ from dotenv import load_dotenv
 import pandas as pd
 df = pd.read_excel(r'fight.xlsx')
 rankValueSheet = df.iloc[1:,1:].to_numpy()
-print(rankValueSheet)
+#print(rankValueSheet)
 
-load_dotenv()
-#봇 연결에 필요한 정보
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = ("HAN","DALDAL Clan")#os.getenv('DISCORD_GUILD')
-apikey = os.getenv('API_KEY')
 
-#게임 참가에 쓰이는 정보
-admins = {"Han#6098","sinnamon#9618"}
-positions = ("top","jg","mid","adc","sup")
-tier_score = {"IRON": 0, "BRONZE": 4, "SILVER": 8, "GOLD": 12, "PLATINUM": 16, "DIAMOND": 20, "MASTER": 24, "GRANDMASTER": 28, "CHALLENGER": 32}
-rank_score = {"I":4, "II":3, "III":2, "IV":1}
-players = {} #"플레이어 이름" : 포지션1, 포지션2, 총 랭크 점수
-profiles = {} #"디스코드 이름: 게임내 이름, 포지션 1, 포지션 2"
-numTeams = 2
+
 import numpy as np
+
+class server:
+    def __init__(self):
+        self.players = {}
+        self.team = [{},{}]
+        self.numTeams = 2
+        self.unassigned = []
 
 def teamScore(dic):
     total = 0
@@ -88,10 +83,10 @@ def tryOpt(team1,team2):
 def getSummonerInfo(userName):
     summonerInfo = (requests.get('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + userName + '?api_key=' + apikey)).json()
     return summonerInfo, "id" in summonerInfo
-async def addPlayer(userName,id,pos1,pos2,message):
+async def addPlayer(userName,id,pos1,pos2,message,playerPool):
     leagueInfo = ((requests.get('https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())[0]
-    players[userName] = (pos1, pos2, tier_score[leagueInfo['tier']] + rank_score[leagueInfo['rank']])
-    await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(players)}```')
+    playerPool[userName] = (pos1, pos2, tier_score[leagueInfo['tier']] + rank_score[leagueInfo['rank']])
+    await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
 
 async def positionCheck(input1,input2,message):
     if input1 == input2:
@@ -101,14 +96,7 @@ async def positionCheck(input1,input2,message):
         await message.channel.send('```Invalid position!\nposition available: top, jg, mid, adc, sup```')
         return False
     return True
-
-server = {} #들어가는 내용물  - > 서버 이름: [teams, unsassigned, numTeams]
-teams = [{},{}] #name and score
-unassigned = [] #only name
-
-sorted_players = sorted(players.items(), key=lambda x:x[1][2], reverse=False)
-
-
+    
 def position_assign_one_p(player,teams):
     preference = player[1][0:2]
     score = player[1][2]
@@ -188,6 +176,31 @@ def adjust_score(teams):
     
     print(f"NO FURTHER IMPROVEMENT AVAILABLE")
     return False
+    
+    
+load_dotenv()
+#봇 연결에 필요한 정보
+TOKEN = os.getenv('DISCORD_TOKEN')
+GUILD = os.getenv('DISCORD_GUILD')
+apikey = os.getenv('API_KEY')
+
+#게임 참가에 쓰이는 정보
+admins = {"Han#6098","sinnamon#9618"}
+positions = ("top","jg","mid","adc","sup")
+tier_score = {"IRON": 0, "BRONZE": 4, "SILVER": 8, "GOLD": 12, "PLATINUM": 16, "DIAMOND": 20, "MASTER": 24, "GRANDMASTER": 28, "CHALLENGER": 32}
+rank_score = {"I":4, "II":3, "III":2, "IV":1}
+players = {} #"플레이어 이름" : 포지션1, 포지션2, 총 랭크 점수
+profiles = {} #"디스코드 이름: 게임내 이름, 포지션 1, 포지션 2"
+numTeams = 2
+
+servers = {} #들어가는 내용물  - > 서버 이름: [teams, unsassigned, numTeams]
+teams = [{},{}] #name and score
+unassigned = [] #only name
+
+sorted_players = sorted(players.items(), key=lambda x:x[1][2], reverse=False)
+
+
+
 
 
 
@@ -195,6 +208,9 @@ def adjust_score(teams):
 
 client = discord.Client()
 numargs = 0
+
+
+#프로파일 불러읽음
 try:
     f = open("profiles.txt",'r')
     readFile = f.read().split()
@@ -210,25 +226,37 @@ except IOError:
 #when the client is connected -> happened 
 @client.event
 async def on_ready():
-    #print(f'{client.user} has connected to Discord!')
+    print(f'{client.user} has connected to Discord!')
+    print(f"Allowed servers: {GUILD}")
     for guild in client.guilds:
-        print(GUILD)
-        print(apikey)
-        if guild.name != GUILD:
+    
+        print(guild.name)
+        servers[guild.name] = server()
+        print("Was added to the servers list")
+        if not guild.name in GUILD:
+            print("being broken")
             break
 
         print(
             f'{client.user} is connected to the following guild:\n'
             f'{guild.name}(id: {guild.id})\n'
         )
+    print(servers)
         
+        
+#####################################
+###### 커맨드 부분 여기서 부터 시작 ##########
+#####################################
 @client.event
 async def on_message(message):
     
     if message.author == client.user:
         return
+    print("message recieved")
     discordName = str(message.author)
     inputMessage = message.content;
+    currentServer = servers[message.guild.name]
+    print("start checking for the command")
     if message.content.startswith('!test'):
         await message.channel.send('Hello world!')
     elif inputMessage == "!load":
@@ -252,7 +280,7 @@ async def on_message(message):
             return
         quit()
         
-    elif inputMessage == "!종료":
+    elif inputMessage == "!ㅂㅂ":
         if not str(message.author) in admins:
             await message.channel.send('INVALID ATTEMPT')
             return
@@ -264,8 +292,8 @@ async def on_message(message):
         
     #listing current players
     elif inputMessage == "!list":
-        sorted_players = sorted(players.items(), key=lambda x:x[1][2], reverse=False)
-        if (len(players) != 0) :
+        sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=False)
+        if (len(currentServer.players) != 0) :
             await message.channel.send(sorted_players)
         else :
             await message.channel.send("No players")            
@@ -287,6 +315,11 @@ async def on_message(message):
             
             await message.channel.send(f"Successfully updated the number of players to:{numTeams}")
             return
+
+
+    elif inputMessage == "!checkServerName":
+        await message.channel.send(f"current server's name is : {message.guild}")
+
 
 ##############################################################################################################
     #MAKE TEAMS WITH RANKS
@@ -329,8 +362,8 @@ async def on_message(message):
     # MAKE TEAM WITH POSITOIONS
     elif inputMessage.startswith('!maketeam-position'):
         teams = [{},{}]
-        if len(players) != 10:
-            await message.channel.send("player number is not enough")
+        if len(players) * numTeams != 0:
+            await message.channel.send("Not enough players are available.")
             #return
         sorted_players = sorted(players.items(), key=lambda x:x[1][2], reverse=False)
         print(sorted_players)
@@ -372,7 +405,7 @@ async def on_message(message):
         if len(joinText) == 1 and discordName in profiles:
             userName = profiles[discordName][0]
             SummonerInfo,found = getSummonerInfo(userName)
-            await addPlayer(userName,SummonerInfo['id'],profiles[discordName][1],profiles[discordName][2],message)
+            await addPlayer(userName,SummonerInfo['id'],profiles[discordName][1],profiles[discordName][2],message,currentServer.players)
             return
         elif len(joinText) < 4:
             await message.channel.send('!참가 <username> <1st position> <2nd position>')
@@ -391,20 +424,35 @@ async def on_message(message):
         if userName in players:
             await message.channel.send(f'```{userName} is already joined!```')
             return
-        await addPlayer(userName,SummonerInfo['id'],joinText[-2], joinText[-1],message)
+        await addPlayer(userName,SummonerInfo['id'],joinText[-2], joinText[-1],message,currentServer.players)
         return
         
     #퇴장 스크립트
     elif inputMessage.startswith('!leave'):
         leaveText = inputMessage.split()
-        if len(leaveText) < 2:
-            await message.channel.send('```!leave <username>```')
-            return
+        if(inputmessage == "!leave"):
+            if not discordName in profiles:
+                await message.channel.send(f"```{discordName} does not have a profile made!```")
+                await message.channel.send('```!leave <username>```')
+                return
+                
+            elif profiles[discordName][0] in currentServer.players:
+                currentServer.players.pop(profiles[discordName][0])
+                await message.channel.send(f'```Player {profiles[discordName][0]} successfully LEFT!\n# of Currently joined players: {len(currentServer.players)}```')                
+                return
+            else:
+                await message.channel.send(f"```Player {profiles[discordName][0]} didn't join yet.```")
+                return
+
         userName = "".join(leaveText[1:])
         userName = userName.lower()
         if userName in players.keys():
-            players.pop(userName)
-            await message.channel.send(f'```Player {userName} successfully LEFT!\n# of Currently joined players: {len(players)}```')
+            currentServer.players.pop(userName)
+            await message.channel.send(f'```Player {userName} successfully LEFT!\n# of Currently joined players: {len(currentServer.players)}```')
+        else:
+            await message.channel.send(f'```Player {userName} does not exist!```')
+        
+       
 
 ##################################################################################################################################
     #Profile script
