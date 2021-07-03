@@ -7,7 +7,7 @@ from enum import Enum
 from dotenv import load_dotenv
 import pandas as pd
 df = pd.read_excel(r'fight.xlsx')
-rankValueSheet = df.iloc[1:,1:].to_numpy()
+rankValueSheet = df.iloc[:,1:].to_numpy()
 #print(rankValueSheet)
 
 
@@ -85,7 +85,7 @@ def getSummonerInfo(userName):
     return summonerInfo, "id" in summonerInfo
 async def addPlayer(userName,id,pos1,pos2,message,playerPool):
     leagueInfo = ((requests.get('https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())[0]
-    playerPool[userName] = (pos1, pos2, tier_score[leagueInfo['tier']] + rank_score[leagueInfo['rank']])
+    playerPool[userName] = (pos1, pos2, rankValueSheet[ rank_score[leagueInfo['rank']]][tier_score[leagueInfo['tier']]])
     await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
 
 async def positionCheck(input1,input2,message):
@@ -97,7 +97,7 @@ async def positionCheck(input1,input2,message):
         return False
     return True
     
-def position_assign_one_p(player,teams):
+def position_assign_one_p(player,teams,unassigned):
     preference = player[1][0:2]
     score = player[1][2]
     name = player[0]
@@ -187,18 +187,50 @@ apikey = os.getenv('API_KEY')
 #게임 참가에 쓰이는 정보
 admins = {"Han#6098","sinnamon#9618"}
 positions = ("top","jg","mid","adc","sup")
-tier_score = {"IRON": 0, "BRONZE": 4, "SILVER": 8, "GOLD": 12, "PLATINUM": 16, "DIAMOND": 20, "MASTER": 24, "GRANDMASTER": 28, "CHALLENGER": 32}
-rank_score = {"I":4, "II":3, "III":2, "IV":1}
-players = {} #"플레이어 이름" : 포지션1, 포지션2, 총 랭크 점수
+tier_score = {"IRON": 0, "BRONZE": 1, "SILVER": 2, "GOLD": 3, "PLATINUM": 4, "DIAMOND": 5, "MASTER": 6, "GRANDMASTER": 7, "CHALLENGER": 8}
+rank_score = {"I":3, "II":2, "III":1, "IV":0}
+#"플레이어 이름" : 포지션1, 포지션2, 총 랭크 점수
 profiles = {} #"디스코드 이름: 게임내 이름, 포지션 1, 포지션 2"
 numTeams = 2
 
 servers = {} #들어가는 내용물  - > 서버 이름: [teams, unsassigned, numTeams]
-teams = [{},{}] #name and score
-unassigned = [] #only name
 
-sorted_players = sorted(players.items(), key=lambda x:x[1][2], reverse=False)
+#재미로 넣은거
+property = ["완전 새것같은","괴이한","기괴한","금속재질의","챌린져의","브론즈의", "거대한","날카로운","위협적인","더러운","아름다운", "", "훌륭한", "멋진", "때가 낀", "어두운", "밝은", "뜨거운", "차가운", "길다란", "찰랑거리는", "엄청난", "작은", "귀여운", "못생긴"]
+soundProp = ["짧은", "큰", "알수없는", "듣기 거북한", "분노에 찬", "끔찍한", "엄청난", "형용할 수 없는", "구슬픈", "조그만", "한에 찬", "서러운"]
 
+weapon = ["둔기를","쇠빠따를","꽉 쥔 주먹을", "젓가락을", "새끼 손가락을", "십자가를", "갓 담근 김치를", "엘보를 ", "니킥을 ", "똥덩어리를 ", "연양갱을 "]
+body = ["명치에","관자놀이에","7번 척추뼈에","면상에","급소에", "인중에", "어깨에", "정강이에", "무릎에", "마빡에", "이마에"]
+method = ["개 쌔게 갈겼다.","휘둘렀다.", "내던졌다.", "후려쳤다", "정확히 찔렀다.", "터치했다.", "가볍게 문질렀다."]
+how = ["이상한 소리를 내며 " , "" ,"괴상한 자세로 ", "멋진 포즈와 함께 ", "눈물을 머금고 ", "분노에 가득차 ", "신이나서 ", "콧노래를 부르며 ", "찡찡대며 "]
+who = ["지나가던 개가", "당신이", "당신의 교수님이", "모든 것을 지켜보던 개발자가"]
+feature = ["눈매를 ","마음씨를 ", "얼굴을 ", "손을 ", "손톱을 ", "발톱을 ", "머리칼을 ", "심장을 ", "뇌를 ", "어깨를 ", "무릎을 ", "팔꿈치를 ", "이마를 "]
+describedFeature = f"{property[random.randrange(13)]} {feature[random.randrange(7)]}"
+featureEnding = ["소유한", "빼고 다 가진", "가지지 못한", "지닌", "가지고 있는", "보유한", "제외하고 자랑할게 없는", "자랑스럽게 생각하는"]
+featureJoins = [" 지녔으며 "," 가지고 있으며 ", " 소유했으며 ", " 가지진 못했지만 "," 보유했으며 ", " 가졌고 ", " 소유했고 ", " 탑재한 "]
+beginning = ["마법 주문을 외우자,", f"{random.choice(property)} {random.choice(weapon)} 달달한 봇의 {random.choice(body)} {random.choice(method)}.", "강렬한 눈빛으로 달달한 봇을 바라봤고,", "명령을 하자,", "힘을 방출하자,"]
+reaction = [f"{random.choice(soundProp)} 소리를 지르며", f"{random.choice(soundProp)} 단말마와 함께", "소리조차 지르지 못하고", f"당신에게 {random.choice(soundProp)} 저주를 퍼부으며", f"{random.choice(soundProp)} 소리로 울부짖으며",  "신비한 자세를 취하며", "온몸이 뒤틀리며"]
+ending = ["사라졌다.","원자 단위로 분해되었다.", "쓰러졌다.", "바스라졌다.", "먼지가 되었다.", "무지개 다리를 건넜다." , "죽었다.", "사망했다.","성불했다.", "분쇄되었다.", "신비해졌다.", "중국 공안당에게 잡혀갔다.", "모두의 기억속에서 잊혀졌다.", "눈물을 흘렸다.", "울었다." , "엄마에게 이르러 갔다.", "도망갔다.", "후퇴했다.", "몸을 웅크렸다.", "퍼엉 하고 터졌다.", "폭발했다."]
+
+
+def conjoinFeatures():
+    numba = random.randrange(4)
+    if(numba == 0):
+        textToReturn = random.choice(property)
+        return textToReturn
+    textToReturn = describedFeature
+
+    while numba < 2:
+        textToReturn += featureJoins[random.randrange(8)]
+        if numba == 1:
+            textToReturn += random.choice(property)
+            return textToReturn
+        textToReturn += f"{property[random.randrange(25)]} {feature[random.randrange(13)]}"
+        numba = random.randrange(4)
+        
+            
+    textToReturn += random.choice(featureEnding)
+    return textToReturn
 
 
 
@@ -241,7 +273,6 @@ async def on_ready():
             f'{client.user} is connected to the following guild:\n'
             f'{guild.name}(id: {guild.id})\n'
         )
-    print(servers)
         
         
 #####################################
@@ -252,11 +283,9 @@ async def on_message(message):
     
     if message.author == client.user:
         return
-    print("message recieved")
     discordName = str(message.author)
     inputMessage = message.content;
     currentServer = servers[message.guild.name]
-    print("start checking for the command")
     if message.content.startswith('!test'):
         await message.channel.send('Hello world!')
     elif inputMessage == "!load":
@@ -289,6 +318,21 @@ async def on_message(message):
             f.write(f"{i} {profiles[i][0]} {profiles[i][1]} {profiles[i][2]}\n")
         f.close()
         quit()
+    elif inputMessage == "!소멸":
+        #if not str(message.author) in admins:
+        #    possibleMessages = ('`"후후, 너는 나를 소멸시킬 수 없다!"`', '`"훗... 가소롭군..."`', '`"넌 내 상대가 아니다!"`', '`"따까리는 빠져!"`', '`"흥!"`')
+            
+        #    await message.channel.send(random.choice(possibleMessages)+ "\n달달한 봇은 소멸에 저항했다!")
+            
+        #    return
+        f = open("profiles.txt", "w")
+        for i in profiles.keys():
+            f.write(f"{i} {profiles[i][0]} {profiles[i][1]} {profiles[i][2]}\n")
+        f.close()
+        text =f"{conjoinFeatures()} {random.choice(who)} {random.choice(how)}{random.choice(beginning)} 달달한 봇은 {random.choice(reaction)} {random.choice(ending)}"
+
+        await message.channel.send(text)
+        #await client.close()
         
     #listing current players
     elif inputMessage == "!list":
@@ -300,20 +344,31 @@ async def on_message(message):
         return
     #manual
     elif inputMessage == "!help":
-        await message.channel.send('1. !test')
-        await message.channel.send('2. !list')
-        await message.channel.send('3. !join <username> <1st position> <2nd position>')
-        await message.channel.send('4. !leave <username>')
-        await message.channel.send('5. !help')
-        await message.channel.send('6. !maketeam-rank')
+        text = \
+"Game Related:\n```\
+1. !참가 <username> <1st position> <2nd position>\n   (if has profile is made) !참가\n\
+2. !leave <username>\n\
+3. !NumberOfTeams <number of teams>\n\
+4. !make <\"position\" or \"rank\">```\
+Profile Related```\
+1. !profile update <username> <1st position> <2nd positions>\n\
+2. !profile check```\
+Other```\
+1. !credit```\
+Debugging```\
+1. !test\n\
+2. !list\n\
+3. !ㅂㅂ or !quit or !소멸```"
+        
+        await message.channel.send(text)
 
     #SET TEAM NUMBERS
     elif inputMessage.startswith('!NumberOfTeams'):
         inputSegment = inputMessage.split()
         if(inputSegment[-1].isnumeric()):
-            numTeams = inputSegment[-1]
+            currentServer.numTeams = inputSegment[-1]
             
-            await message.channel.send(f"Successfully updated the number of players to:{numTeams}")
+            await message.channel.send(f"Successfully updated the number of players to:{currentServer.numTeams}")
             return
 
 
@@ -323,12 +378,17 @@ async def on_message(message):
 
 ##############################################################################################################
     #MAKE TEAMS WITH RANKS
-    elif inputMessage.startswith('!maketeam-rank'):
+    elif inputMessage =='!make rank':
 
-            
+        if len(currentServer.players) == 0:
+            await message.channel.send("Weird... Nobody, including yourself, wanted to play...")
+            return
+        elif len(currentServer.players) == 1:
+            await message.channel.send(f"Nobody wanted to play with {discordName}...")
+            return
+     
         teams = [{},{}]
-        teams[0],teams[1] = initAssignment(players)
-        print (teams[0])
+        teams[0],teams[1] = initAssignment(currentServer.players)
         print("init value-----------")
 
         print(f"{teams[0]} - total = {teamScore(teams[0])}")
@@ -360,16 +420,16 @@ async def on_message(message):
 
 
     # MAKE TEAM WITH POSITOIONS
-    elif inputMessage.startswith('!maketeam-position'):
+    elif inputMessage == '!make position':
         teams = [{},{}]
-        if len(players) * numTeams != 0:
+        if len(currentServer.players) != numTeams * 5:
             await message.channel.send("Not enough players are available.")
-            #return
-        sorted_players = sorted(players.items(), key=lambda x:x[1][2], reverse=False)
+            return
+        sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=False)
         print(sorted_players)
         for player in sorted_players :
-            position_assign_one_p(player,teams)
-        for person in unassigned :
+            position_assign_one_p(player,teams,currentServer.unassigned)
+        for person in currentServer.unassigned :
             assign_unassigned(person,teams)
         for i in range(10) :
             print("ADJUSTMENT IS BEING MADE")
@@ -386,14 +446,14 @@ async def on_message(message):
         for key in positions:
             team0_score += teams[0][key][1]
             print_dict[key] = teams[0][key][0]
-            print_str += f"\t{key.upper()}: \t{teams[0][key][0]}\n"
+            print_str += f"\t{key.upper():>3}: \t{teams[0][key][0]}\n"
         print_str += "```"
         await message.channel.send(print_str)
         team1_score = 0
         print_str = "**Team 2:**\n```"
         for key in positions:
             team1_score += teams[1][key][1]
-            print_str += f"\t{key.upper()}: \t{teams[1][key][0]}\n"
+            print_str += f"\t{key.upper():>3}: \t{teams[1][key][0]}\n"
         print_str += "```"
         await message.channel.send(print_str)
         await message.channel.send(f"diff in teams: {abs( team0_score- team1_score)}")
@@ -421,7 +481,7 @@ async def on_message(message):
         if not found:
             await message.channel.send(f'```User name {userName} was NOT found!\nPlease check the name again!```')
             return
-        if userName in players:
+        if userName in currentServer.players:
             await message.channel.send(f'```{userName} is already joined!```')
             return
         await addPlayer(userName,SummonerInfo['id'],joinText[-2], joinText[-1],message,currentServer.players)
@@ -430,7 +490,7 @@ async def on_message(message):
     #퇴장 스크립트
     elif inputMessage.startswith('!leave'):
         leaveText = inputMessage.split()
-        if(inputmessage == "!leave"):
+        if(inputMessage == "!leave"):
             if not discordName in profiles:
                 await message.channel.send(f"```{discordName} does not have a profile made!```")
                 await message.channel.send('```!leave <username>```')
@@ -446,7 +506,7 @@ async def on_message(message):
 
         userName = "".join(leaveText[1:])
         userName = userName.lower()
-        if userName in players.keys():
+        if userName in currentServer.players:
             currentServer.players.pop(userName)
             await message.channel.send(f'```Player {userName} successfully LEFT!\n# of Currently joined players: {len(currentServer.players)}```')
         else:
@@ -498,4 +558,7 @@ async def on_message(message):
 
     elif inputMessage.startswith('!credit'):
         await message.channel.send('```HAN: Art, Producing, Programming \nSinnamon: Programming```')        
+        
+    elif inputMessage == "!print chart":
+        print(rankValueSheet)
 client.run(TOKEN)
