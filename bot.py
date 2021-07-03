@@ -445,6 +445,9 @@ async def on_message(message):
             await message.channel.send(f"```{discordName}'s profile has been updated!```")
             return
            
+##############################################################
         
 
+    elif inputMessage.startswith('!credit'):
+        await message.channel.send('```HAN: Art, Producing, Programming \nSinnamon: Programming```')        
 client.run(TOKEN)
