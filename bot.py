@@ -320,7 +320,7 @@ async def on_message(message):
             f.write(f"{i} {profiles[i][0]} {profiles[i][1]} {profiles[i][2]}\n")
         f.close()
         quit()
-    elif inputMessage == "!소멸":
+    elif inputMessage == "!샌드백":
         #if not str(message.author) in admins:
         #    possibleMessages = ('`"후후, 너는 나를 소멸시킬 수 없다!"`', '`"훗... 가소롭군..."`', '`"넌 내 상대가 아니다!"`', '`"따까리는 빠져!"`', '`"흥!"`')
             
@@ -356,11 +356,12 @@ Profile Related```\
 1. !profile update <username> <1st position> <2nd positions>\n\
 2. !profile check```\
 Other```\
-1. !credit```\
+1. !샌드백\n\
+2. !credit```\
 Debugging```\
 1. !test\n\
 2. !list\n\
-3. !ㅂㅂ or !quit or !소멸```"
+3. !ㅂㅂ or !quit```"
         
         await message.channel.send(text)
 
