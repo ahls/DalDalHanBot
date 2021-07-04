@@ -5,6 +5,7 @@ import requests
 import random
 from enum import Enum
 from dotenv import load_dotenv
+import cassiopeia as cass
 import pandas as pd
 df = pd.read_excel(r'fight.xlsx')
 rankValueSheet = df.iloc[:,1:].to_numpy()
@@ -357,6 +358,7 @@ Profile Related```\
 2. !profile check```\
 Other```\
 1. !샌드백\n\
+2. !random-pick <number of random champions>\n\
 2. !credit```\
 Debugging```\
 1. !test\n\
@@ -364,7 +366,22 @@ Debugging```\
 3. !ㅂㅂ or !quit```"
         
         await message.channel.send(text)
+##############################################################################################################
+    #MAKE RANDOM PICK
+    elif inputMessage.startswith('!random-pick'):
+        inputSegment = inputMessage.split()
+        cass.set_riot_api_key(apikey)  # This overrides the value set in your configuration/settings.
+        cass.set_default_region("NA")
 
+        champions = cass.get_champions()
+        number_random_champion = int(inputSegment[-1])
+
+        for get_random_champion in range (number_random_champion):
+            random_champion = random.choice(champions)
+            await message.channel.send(str(get_random_champion+1) + ". {name}.".format(name=random_champion.name))
+            print(str(get_random_champion+1) + ". {name}.".format(name=random_champion.name))
+        return
+                
     #SET TEAM NUMBERS
     elif inputMessage.startswith('!NumberOfTeams'):
         inputSegment = inputMessage.split()
