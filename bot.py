@@ -217,10 +217,9 @@ propertyLen = len(property)
 featureLen = len(feature)
 selfHate = ["정체성이 혼란한","자기 혐오에 빠진", "자아를 잃어버린", "쉐도우 복싱에 심취한", "정신이 오락가락하는", "잠이 덜깬", "거울에 비친 자신의 모습을 본", "폰 액정에 반사된 자신의 얼굴을 본"]
 explainBattle = ["기나긴 혈투 끝에", "몇번의 합을 겨룬 후", "단숨에", "눈 깜짝할 사이에", f"약 {random.randrange(0,1000)}초 후,", "반격의 반격을 거듭한 끝에"] 
-victory = ["{victor}(은)는 {defeated}에게 패배가 무엇인지 알려주었습니다.", "{victor}(은)는 {defeated}에게 인생의 쓴맛을 보여주었습니다.", "{victor}(은)는 {defeated}에게 굴욕감을 주었습니다.", "{victor}(은)는 {defeated}을 산산조각 냈습니다.",  "{victor}의 손에 의해 {defeated}(이)가 쓰러졌습니다.", "{defeated}(이)가 {victor}에게 패배를 인정했습니다.", "{defeated}(이)가 {victor}에게 항복을 선언했습니다.", "{victor}(이)가 {defeated}의 울음보를 터트렸습니다."]
+victory = ["{victor}(은)는 {defeated}에게 패배가 무엇인지 알려주었다.", "{victor}(은)는 {defeated}에게 인생의 쓴맛을 보여주었다.", "{victor}(은)는 {defeated}에게 굴욕감을 주었다.", "{victor}(은)는 {defeated}을 산산조각 냈다.",  "{victor}의 손에 의해 {defeated}(이)가 쓰러졌다.", "{defeated}(이)가 {victor}에게 패배를 인정했다.", "{defeated}(이)가 {victor}에게 항복을 선언했다.", "{victor}(이)가 {defeated}의 울음보를 터트렸다.","{defeated}의 자존감은 {victor}에 의해 박살났다."]
 dagul = ["호기롭게", "바보같이", "멍청하게", "용맹하게"]
 joiningWords = ["그리고", "그 뒤,", "둘은 잠시 숨을 고르고", "그 찰나에"]
-battleBegin = ["야생의 {init} 이 풀숲에서 튀어나와 {target}(을)를 공격하였다!", f"{{init}}(은)는 끼고 있던 장갑을 {{target}}의 {random.choice(body)} 던졌다.", f"{{init}}(이)가 {{target}}에게 {random.choice(soundProp)} 욕을 했고, 둘은 싸움을 시작했다.", "{init}이 {target} 에게 정정당당한 승부를 요청했다."]
 def conjoinFeatures():
     numba = random.randrange(4)
     if(numba == 0):
@@ -240,6 +239,7 @@ def conjoinFeatures():
     textToReturn += random.choice(featureEnding)
     return textToReturn
 
+battleBegin = [f"야생의 {conjoinFeatures()}{{init}} 이 풀숲에서 튀어나와 {conjoinFeatures()}{{target}}(을)를 공격하였다!", f"{conjoinFeatures()}{{init}}(은)는 끼고 있던 장갑을 {conjoinFeatures()}{{target}}의 {random.choice(property)}{random.choice(body)} 던졌다.", f"{conjoinFeatures()} {{init}}(이)가 {conjoinFeatures()} {{target}}에게 {random.choice(soundProp)} 욕을 했고, 둘은 싸움을 시작했다.", f"{conjoinFeatures()}{{init}}이 {conjoinFeatures()}{{target}} 에게 정정당당한 승부를 요청했다."]
 
 
 
