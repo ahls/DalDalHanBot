@@ -199,23 +199,28 @@ servers = {} #들어가는 내용물  - > 서버 이름: [teams, unsassigned, nu
 #재미로 넣은거
 property = ["각잡힌","정상적인","심술궃은","깔끔한","깨끗한","주름접힌", "주름없는","완전 새 것같은", "오래된","녹슨","빛바랜","괴이한","기괴한","금속재질의","아이언의","단단한","부드러운","굳센","유연한","챌린져의","브론즈의", "거대한","날카로운","위협적인","더러운","아름다운", "", "훌륭한", "멋진", "때가 낀", "어두운", "밝은", "뜨거운", "차가운", "길다란", "찰랑거리는", "엄청난", "작은", "귀여운", "못생긴"]
 soundProp = ["짧은", "큰", "알수없는", "듣기 거북한", "분노에 찬", "끔찍한", "엄청난", "형용할 수 없는", "구슬픈", "조그만", "한에 찬", "서러운"]
-
-weapon = ["둔기를","쇠빠따를","꽉 쥔 주먹을", "젓가락을", "새끼 손가락을", "십자가를", "갓 담근 김치를", "엘보를", "니킥을", "똥덩어리를", "연양갱을", "손끝을", "식칼을", "장미칼을", "짱돌을", "쇠파이프를","각목을"]
+element = ("불의", "얼음", "비전", "전설의", "소멸", "화염")
+weapon = ["둔기를","쇠빠따를","꽉 쥔 주먹을", "젓가락을","중지를", "새끼 손가락을", "십자가를", "갓 담근 김치를", "엘보를", "니킥을", "똥덩어리를", "연양갱을", "손끝을", "식칼을", "장미칼을", "짱돌을", "쇠파이프를","각목을"]
 body = ["명치에","관자놀이에","7번 척추뼈에","면상에","급소에", "인중에", "어깨에", "정강이에", "무릎에", "마빡에", "이마에"]
 method = ["개 쌔게 갈겼다.","휘둘렀다.", "내던졌다.", "후려쳤다", "정확히 찔렀다.", "터치했다.", "가볍게 문질렀다."]
 how = ["이상한 소리를 내며 " , "" ,"괴상한 자세로 ", "멋진 포즈와 함께 ", "눈물을 머금고 ", "분노에 가득차 ", "신이나서 ", "콧노래를 부르며 ", "찡찡대며 ", f"{random.choice(soundProp)} 휘파람을 부르며"]
-who = ["지나가던 개가", "당신이", "당신의 교수님이", "모든 것을 지켜보던 개발자가", "교장선생님이", "마트 아저씨가", "버스 운전기사가", "경찰아저씨가", "대통령이", "대마왕이", "철수가", "영희가", "철수와 영희가", "반 친구가", "유명 스트리머가", "건물주가", "백만장자가", "일론 머스크가", "외계인이", "누렁이가", "황소가" , "원숭이가", "개구리가", "뱁새가", "엔지니어가", "상담사가", "범죄자가"]
+who = ["지나가던 개가", "당신이", "당신의 교수님이", "모든 것을 지켜보던 개발자가", "교장선생님이", "마트 아저씨가", "버스 운전기사가", "경찰아저씨가", "대통령이", "대마왕이", "철수가", "영희가", "철수와 영희가", "반 친구가", "유명 스트리머가", "건물주가", "백만장자가", "일론 머스크가", "외계인이", "누렁이가", "황소가" , "원숭이가", "개구리가", "뱁새가", "엔지니어가", "상담사가", "범죄자가", "다리우스가", "드레이븐이", "마이스터 이가", "티모가"]
 feature = ["눈매를 ","마음씨를 ", "얼굴을 ", "손을 ", "손톱을 ", "발톱을 ", "머리칼을 ", "심장을 ", "뇌를 ", "어깨를 ", "무릎을 ", "팔꿈치를 ", "이마를 "]
 describedFeature = f"{property[random.randrange(25)]} {feature[random.randrange(13)]}"
 featureEnding = ["소유한", "빼고 다 가진", "가지지 못한", "지닌", "가지고 있는", "보유한", "제외하고 자랑할게 없는", "자랑스럽게 생각하는"]
 featureJoins = [" 지녔으며 "," 가지고 있으며 ", " 소유했으며 ", " 가지진 못했지만 "," 보유했으며 ", " 가졌고 ", " 소유했고 ", " 탑재한 "]
 groups = ["중국 공안당에게", "FBI에게", "러시아 경찰에게","경찰에게", "성난 사람들에게", "무서운 형들에게", "무서운 언니들에게", "화가 잔뜩난 부모님에게"]
-beginning = ["마법 주문을 외우자,", f"{random.choice(property)} {random.choice(weapon)} 달달한 봇의 {random.choice(body)} {random.choice(method)}.", "강렬한 눈빛으로 달달한 봇을 바라봤고,", "명령을 하자,", "힘을 방출하자,"]
+beginning = [f"{random.choice(element)} 마법 주문을 외우자,", f"{random.choice(property)} {random.choice(weapon)} 달달한 봇의 {random.choice(body)} {random.choice(method)}.", "강렬한 눈빛으로 달달한 봇을 바라봤고,", "명령을 하자,", "힘을 방출하자,", "심한 욕을 하자,", "속사포 랩을 내뱉자,"]
 reaction = [f"{random.choice(soundProp)} 소리를 지르며", f"{random.choice(soundProp)} 단말마와 함께", "소리조차 지르지 못하고", f"당신에게 {random.choice(soundProp)} 저주를 퍼부으며", f"{random.choice(soundProp)} 소리로 울부짖으며",  f"{random.choice(property)} 자세를 취하며", "온몸이 뒤틀리며"]
-ending = ["사라졌다.","원자 단위로 분해되었다.", "쓰러졌다.", "바스라졌다.", "먼지가 되었다.", "무지개 다리를 건넜다." , "죽었다.", "사망했다.","성불했다.", "분쇄되었다.", "신비해졌다.", f"{random.choice(groups)} 잡혀갔다.", "모두의 기억속에서 잊혀졌다.", "눈물을 흘렸다.", "울었다." , "엄마에게 이르러 갔다.", "도망갔다.", "후퇴했다.", "몸을 웅크렸다.", "퍼엉 하고 터졌다.", "폭발했다."]
+ending = ["사라졌다.","원자 단위로 분해되었다.", "쓰러졌다.", "바스라졌다.", "먼지가 되었다.", "무지개 다리를 건넜다." , "사망했다.","성불했다.", "분쇄되었다.", "신비해졌다.", f"{random.choice(groups)} 잡혀갔다.", "모두의 기억속에서 잊혀졌다.", "눈물을 흘렸다.", "울었다." , "엄마에게 이르러 갔다.", "도망갔다.", "후퇴했다.", "몸을 웅크렸다.", "퍼엉 하고 터졌다.", "폭발했다.", "서렌을 쳤다."]
 propertyLen = len(property)
 featureLen = len(feature)
-
+selfHate = ["정체성이 혼란한","자기 혐오에 빠진", "자아를 잃어버린", "쉐도우 복싱에 심취한", "정신이 오락가락하는", "잠이 덜깬", "거울에 비친 자신의 모습을 본", "폰 액정에 반사된 자신의 얼굴을 본"]
+explainBattle = ["기나긴 혈투 끝에", "몇번의 합을 겨룬 후", "단숨에", "눈 깜짝할 사이에", f"약 {random.randrange(0,1000)}초 후,", "반격의 반격을 거듭한 끝에"] 
+victory = ["{victor}(은)는 {defeated}에게 패배가 무엇인지 알려주었습니다.", "{victor}(은)는 {defeated}에게 인생의 쓴맛을 보여주었습니다.", "{victor}(은)는 {defeated}에게 굴욕감을 주었습니다.", "{victor}(은)는 {defeated}을 산산조각 냈습니다.",  "{victor}의 손에 의해 {defeated}(이)가 쓰러졌습니다.", "{defeated}(이)가 {victor}에게 패배를 인정했습니다.", "{defeated}(이)가 {victor}에게 항복을 선언했습니다.", "{victor}(이)가 {defeated}의 울음보를 터트렸습니다."]
+dagul = ["호기롭게", "바보같이", "멍청하게", "용맹하게"]
+joiningWords = ["그리고", "그 뒤,", "둘은 잠시 숨을 고르고", "그 찰나에"]
+battleBegin = ["야생의 {init} 이 풀숲에서 튀어나와 {target}(을)를 공격하였다!", f"{init}(은)는 끼고 있던 장갑을 {target}의 {random.choice(body)} 던졌다.", f"{{init}}(이)가 {{target}}에게 {random.choice(soundProp)} 욕을 했고, 둘은 싸움을 시작했다.", "{init}이 {target} 에게 정정당당한 승부를 요청했다."]
 def conjoinFeatures():
     numba = random.randrange(4)
     if(numba == 0):
@@ -234,8 +239,6 @@ def conjoinFeatures():
             
     textToReturn += random.choice(featureEnding)
     return textToReturn
-
-
 
 
 
@@ -321,21 +324,7 @@ async def on_message(message):
             f.write(f"{i} {profiles[i][0]} {profiles[i][1]} {profiles[i][2]}\n")
         f.close()
         quit()
-    elif inputMessage == "!샌드백":
-        #if not str(message.author) in admins:
-        #    possibleMessages = ('`"후후, 너는 나를 소멸시킬 수 없다!"`', '`"훗... 가소롭군..."`', '`"넌 내 상대가 아니다!"`', '`"따까리는 빠져!"`', '`"흥!"`')
-            
-        #    await message.channel.send(random.choice(possibleMessages)+ "\n달달한 봇은 소멸에 저항했다!")
-            
-        #    return
-        f = open("profiles.txt", "w")
-        for i in profiles.keys():
-            f.write(f"{i} {profiles[i][0]} {profiles[i][1]} {profiles[i][2]}\n")
-        f.close()
-        text =f"{conjoinFeatures()} {random.choice(who)} {random.choice(how)}{random.choice(beginning)} 달달한 봇은 {random.choice(reaction)} {random.choice(ending)}"
 
-        await message.channel.send(text)
-        #await client.close()
         
     #listing current players
     elif inputMessage == "!list":
@@ -574,11 +563,44 @@ Debugging```\
             return
            
 ##############################################################
-        
+        #기타 스크립트
 
     elif inputMessage.startswith('!credit'):
         await message.channel.send('```HAN: Art, Producing, Programming \nSinnamon: Programming```')        
         
     elif inputMessage == "!print chart":
         print(rankValueSheet)
+        
+    elif inputMessage.startswith("!결투"):
+        
+        if inputMessage == "!결투":
+            text =f"{conjoinFeatures()} {random.choice(who)} {random.choice(how)}{random.choice(beginning)} 달달한 봇은 {random.choice(reaction)} {random.choice(ending)}"
+            await message.channel.send(text)
+        #누군가를 지목하면
+        elif message.mentions:
+            print(len(message.mentions))    
+            #자기 이름 써있으면 생기는 이벤트
+            for mention in message.mentions:
+                if mention == message.author:
+                    text = f"{random.choice(selfHate)} {message.author.name}(이)가 자신을 공격했고, {random.choice(explainBattle)} {random.choice(victory).format(defeated = message.author.name)}."
+                    await message.channel.send(text)
+                    return
+            #다굴 맞는 이벤트
+            if len(message.mentions) > 1:
+                text = f"{message.author.nick}(이)가 {random.choice(dagul)} 다른 이들을 향해 달려 들었지만, 역시 다굴엔 장사가 없었다."
+            #한명에게 결투
+            elif (len(message.mentions) == 1):
+                if random.randrange(2) == 1:
+                    #승리
+                    text = f"승리했다"
+                else:
+                    #패배
+                    text = f"패배했다"
+                await message.channel.send(text)
+        #누군가를 지목하지 못했을때
+        else:
+            text = f"{message.author.name}(은)는 누군가를 지목하여 결투를 하고싶었지만, 너무 긴장한 나머지 아무도 지목하지 못했다."
+            await message.channel.send(text)
+        
+    
 client.run(TOKEN)
