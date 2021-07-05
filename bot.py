@@ -364,11 +364,15 @@ Debugging```\
 
         champions = cass.get_champions()
         number_random_champion = int(inputSegment[-1])
+        random_champs = []
 
-        for get_random_champion in range (number_random_champion):
+        while len(random_champs) < number_random_champion :
             random_champion = random.choice(champions)
-            await message.channel.send(str(get_random_champion+1) + ". {name}.".format(name=random_champion.name))
-            print(str(get_random_champion+1) + ". {name}.".format(name=random_champion.name))
+            #print (random_champion)
+            if not random_champion.name in random_champs : 
+                random_champs.append(random_champion.name)
+        #print (random_champs)
+        await message.channel.send(f"{number_random_champion} random champ is\n```{random_champs}```")
         return
                 
     #SET TEAM NUMBERS
