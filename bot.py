@@ -220,7 +220,7 @@ explainBattle = ["기나긴 혈투 끝에", "몇번의 합을 겨룬 후", "단�
 victory = ["{victor}(은)는 {defeated}에게 패배가 무엇인지 알려주었습니다.", "{victor}(은)는 {defeated}에게 인생의 쓴맛을 보여주었습니다.", "{victor}(은)는 {defeated}에게 굴욕감을 주었습니다.", "{victor}(은)는 {defeated}을 산산조각 냈습니다.",  "{victor}의 손에 의해 {defeated}(이)가 쓰러졌습니다.", "{defeated}(이)가 {victor}에게 패배를 인정했습니다.", "{defeated}(이)가 {victor}에게 항복을 선언했습니다.", "{victor}(이)가 {defeated}의 울음보를 터트렸습니다."]
 dagul = ["호기롭게", "바보같이", "멍청하게", "용맹하게"]
 joiningWords = ["그리고", "그 뒤,", "둘은 잠시 숨을 고르고", "그 찰나에"]
-battleBegin = ["야생의 {init} 이 풀숲에서 튀어나와 {target}(을)를 공격하였다!", f"{init}(은)는 끼고 있던 장갑을 {target}의 {random.choice(body)} 던졌다.", f"{{init}}(이)가 {{target}}에게 {random.choice(soundProp)} 욕을 했고, 둘은 싸움을 시작했다.", "{init}이 {target} 에게 정정당당한 승부를 요청했다."]
+battleBegin = ["야생의 {init} 이 풀숲에서 튀어나와 {target}(을)를 공격하였다!", f"{{init}}(은)는 끼고 있던 장갑을 {{target}}의 {random.choice(body)} 던졌다.", f"{{init}}(이)가 {{target}}에게 {random.choice(soundProp)} 욕을 했고, 둘은 싸움을 시작했다.", "{init}이 {target} 에게 정정당당한 승부를 요청했다."]
 def conjoinFeatures():
     numba = random.randrange(4)
     if(numba == 0):
@@ -587,15 +587,19 @@ Debugging```\
                     return
             #다굴 맞는 이벤트
             if len(message.mentions) > 1:
-                text = f"{message.author.nick}(이)가 {random.choice(dagul)} 다른 이들을 향해 달려 들었지만, 역시 다굴엔 장사가 없었다."
+                text = f"{message.author.name}(이)가 {random.choice(dagul)} 다른 이들을 향해 달려 들었지만, 역시 다굴엔 장사가 없었다."
             #한명에게 결투
             elif (len(message.mentions) == 1):
+                challenged = message.mentions[0].name
+                text = random.choice(battleBegin).format(init = message.author.name,target = challenged)
+                text += f" {random.choice(explainBattle)} "
                 if random.randrange(2) == 1:
                     #승리
-                    text = f"승리했다"
+                    
+                    text += random.choice(victory).format(victor = message.author.name,defeated = challenged)
                 else:
                     #패배
-                    text = f"패배했다"
+                    text += random.choice(victory).format(victor = challenged,defeated = message.author.name)
                 await message.channel.send(text)
         #누군가를 지목하지 못했을때
         else:
