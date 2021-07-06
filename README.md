@@ -49,33 +49,48 @@ diff in teams: 2
 
 ## Instructions
 Requirements:
-Python 3.6.9 version
-A file named “.env” in the same directory.
-Setup:
-Clone this repository.
-Fill out the “.env” file as following:
+- Python 3.6.9 version
+- A file named “.env” in the same directory.
 
-DISCORD_TOKEN="token given by discord"
-DISCORD_GUILD=["Server name you want to allow to use this bot"]
-API_KEY="API_KEY from Riot Developer website"
-Run the bot.py script
+Setup:
+- Clone this repository.
+- Fill out the “.env” file as following:
+
+```
+    DISCORD_TOKEN="token given by discord"
+    DISCORD_GUILD=["Server name you want to allow to use this bot"]
+    API_KEY="API_KEY from Riot Developer website"
+```
+- Run the bot.py script
+
 When the console displays connected servers, the bot is ready to be used.
 
 
 ## To Make Teams:
 Desired participants can join using “!참가” or “!join”, followed by a few attributes:
+```
 !(참가 or join) <InGameName> <1stPosition> <2ndPosition>
+```
 or simply !(참가 or join) if a profile has been created for the user.
+
 Set the Number of teams participating in the custom using the following command:
+```
 !NumberOfTeams <desiredNumber>
+```
 It is set to 2 by default.
 Make the teams, use the following command:
-!make <priority>
+```
+!make <priority(rank/position)>
+```
 priority maybe be either: “rank” or “position”
 
 ## To Make a Profile:
 To create/update the profile, the user may use the following command:
+```
 !profile update <InGameName> <1stPosition> <2ndPosition>
+```
 Although the profile update command validates if the given inputs are correct, the user can still check the profile with the following command:
+```
 !profile check
+```
 
