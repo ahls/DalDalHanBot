@@ -1,0 +1,7 @@
+discord.py==1.7.3
+numpy==1.19.4
+cassiopeia==4.0.18
+requests==2.18.4
+pandas==1.1.5
+discord==1.7.3
+python-dotenv==0.18.0
