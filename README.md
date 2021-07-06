@@ -1,6 +1,8 @@
 ## Introduction
 DALDALHAN bot, a discord bot, is for making teams in case to have more than 10 people to hang out in League of Legends. This bot can make teams by using 1. only rank in league, and 2. care about preference position and rank.
+
 DALDALHAN Bot is a Discord bot designed to help users in the server form teams to play League of Legends. When making the teams, DALDALHAN Bot will try to balance the team for a fair match by gathering rank information from the Riot API, and the user can specify one of the two priorities: (1)team's total score balance and (2)preferred position.
+
 In addition to the team making commands, the bot has few other helpful commands such as creating a profile for easier use of the bot and the ‘help’ command to see the possible commands list. It also has a random text generator for fun.
 
 ## Example scenario
