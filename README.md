@@ -1,8 +1,9 @@
-Introduction
+## Introduction
 DALDALHAN bot, a discord bot, is for making teams in case to have more than 10 people to hang out in League of Legends. This bot can make teams by using 1. only rank in league, and 2. care about preference position and rank.
 DALDALHAN Bot is a Discord bot designed to help users in the server form teams to play League of Legends. When making the teams, DALDALHAN Bot will try to balance the team for a fair match by gathering rank information from the Riot API, and the user can specify one of the two priorities: (1)team's total score balance and (2)preferred position.
 In addition to the team making commands, the bot has few other helpful commands such as creating a profile for easier use of the bot and the ‘help’ command to see the possible commands list. It also has a random text generator for fun.
-Example scenario
+
+## Example scenario
 Here are two cases to make teams of 10 people.
 
   Player 1: Silver 1 mid, top
@@ -16,7 +17,7 @@ Here are two cases to make teams of 10 people.
   Player 9: Platinum 2 mid, sup
   Player 10: Diamond 3 top, jg
 
-1. Care only for Rank
+Case 1. Care only for Rank
 Team 1:
     1.     Player 1
     2.     Player 7
@@ -31,7 +32,7 @@ Team 2:
     5.     Player 5
 diff in teams: 0
 
-2. Care preference position and rank
+Case 2. Care preference position and rank
 Team 1:
     TOP:     Player 3
      JG:     Player 2
@@ -46,7 +47,7 @@ Team 2:
     SUP:     Player 10
 diff in teams: 2
 
-Instructions
+## Instructions
 Requirements:
 Python 3.6.9 version
 A file named “.env” in the same directory.
@@ -61,7 +62,7 @@ Run the bot.py script
 When the console displays connected servers, the bot is ready to be used.
 
 
-To Make Teams:
+## To Make Teams:
 Desired participants can join using “!참가” or “!join”, followed by a few attributes:
 !(참가 or join) <InGameName> <1stPosition> <2ndPosition>
 or simply !(참가 or join) if a profile has been created for the user.
@@ -71,7 +72,8 @@ It is set to 2 by default.
 Make the teams, use the following command:
 !make <priority>
 priority maybe be either: “rank” or “position”
-To Make a Profile:
+
+## To Make a Profile:
 To create/update the profile, the user may use the following command:
 !profile update <InGameName> <1stPosition> <2ndPosition>
 Although the profile update command validates if the given inputs are correct, the user can still check the profile with the following command:
