@@ -182,9 +182,9 @@ def adjust_score(teams):
     
 load_dotenv()
 #봇 연결에 필요한 정보
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
-apikey = os.getenv('API_KEY')
+TOKEN = os.environ['DISCORD_TOKEN']
+GUILD = os.environ['DISCORD_GUILD']
+apikey = os.environ['API_KEY']
 
 #게임 참가에 쓰이는 정보
 admins = {"Han#6098","sinnamon#9618"}
