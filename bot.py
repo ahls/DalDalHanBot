@@ -8,13 +8,14 @@ from enum import Enum
 from dotenv import load_dotenv
 import cassiopeia as cass
 import pandas as pd
-df = pd.read_excel(r'fight.xlsx')
-rankValueSheet = df.iloc[:,1:].to_numpy()
-#print(rankValueSheet)
-
-
-
 import numpy as np
+#df = pd.read_excel(r'fight.xlsx')
+rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
+print(rankValueSheet)
+
+
+
+
 
 class server:
     def __init__(self):
