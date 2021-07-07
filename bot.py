@@ -3,6 +3,7 @@ import os
 import discord
 import requests
 import random
+import asyncio
 from enum import Enum
 from dotenv import load_dotenv
 import cassiopeia as cass
@@ -611,4 +612,4 @@ Debugging```\
             await message.channel.send(text)
         
     
-client.run(TOKEN)
+client.run(os.environ['token'])
