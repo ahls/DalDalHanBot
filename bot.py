@@ -612,4 +612,4 @@ Debugging```\
             await message.channel.send(text)
         
     
-client.run(os.environ['token'])
+client.run(TOKEN)
