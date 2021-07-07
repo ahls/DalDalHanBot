@@ -187,6 +187,9 @@ TOKEN = os.environ['DISCORD_TOKEN']
 GUILD = os.environ['DISCORD_GUILD']
 apikey = os.environ['API_KEY']
 
+print (TOKEN)
+print (GUILD)
+print (apikey)
 #게임 참가에 쓰이는 정보
 admins = {"Han#6098","sinnamon#9618"}
 positions = ("top","jg","mid","adc","sup")
