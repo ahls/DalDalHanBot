@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 #df = pd.read_excel(r'fight.xlsx')
 rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
-print(rankValueSheet)
+#print(rankValueSheet)
 
 
 
@@ -35,10 +35,10 @@ def initAssignment(givenList):
     team1 = {}
     team2 = {}
     team1Score = team2Score = 0;    
-    print (givenList)
-    print (givenList.keys())
+    #print (givenList)
+    #print (givenList.keys())
     for i in givenList.keys():
-        print (givenList[i][2])
+        #print (givenList[i][2])
         if(team1Score < team2Score):
             if(len(team1) < 5):
                 team1[i]=givenList[i]
@@ -156,7 +156,7 @@ def assign_unassigned(person,teams):
 def adjust_score(teams):
     
     if len(teams[0]) != 5 or len(teams[1]) !=5: #--> need to warning in the end :: FIXME HAN        
-        print ("not enough players")
+        #print ("not enough players")
         return False
     team0_score = 0
     for key in teams[0]:
@@ -175,10 +175,10 @@ def adjust_score(teams):
             tmp = teams[0][position[0]]
             teams[0][position[0]] = teams[1][position[0]]
             teams[1][position[0]] = tmp
-            print(f"adjustment: {teams[0][position[0]]} <-> {teams[1][position[0]]}")
+            #print(f"adjustment: {teams[0][position[0]]} <-> {teams[1][position[0]]}")
             return True
     
-    print(f"NO FURTHER IMPROVEMENT AVAILABLE")
+    #print(f"NO FURTHER IMPROVEMENT AVAILABLE")
     return False
     
     
@@ -495,7 +495,7 @@ Debugging```\
         
     #참가 스크립트
     elif inputMessage.startswith('!참가') or inputMessage.startswith("!join"):
-        joinText = inputMessage.split()
+        joinText = inputMessage.split()     
         if len(joinText) == 1 and discordName in profiles:
             userName = profiles[discordName][0]
             SummonerInfo,found = getSummonerInfo(userName,currentServer.server)
@@ -510,7 +510,7 @@ Debugging```\
 
         userName = "".join(joinText[1:-2])
         userName = userName.lower()
-        print(f"Current User name:'{userName}'")
+        #print(f"Current User name:'{userName}'")
         SummonerInfo, found = getSummonerInfo(userName,currentServer.server)
         if not found:
             await message.channel.send(f'```User name {userName} was NOT found!\nPlease check the name or this channel\'s server!!```')
@@ -583,7 +583,7 @@ Debugging```\
                 await message.channel.send(f'```User name {userName} was NOT found!\nPlease check the name again!```')
                 return
             profiles[discordName] = (userName,profileText[-2],profileText[-1])
-            print(profiles)
+            #print(profiles)
             await message.channel.send(f"```{discordName}'s profile has been updated!```")
             return
            
@@ -603,7 +603,7 @@ Debugging```\
             await message.channel.send(text)
         #누군가를 지목하면
         elif message.mentions:
-            print(len(message.mentions))    
+            #print(len(message.mentions))    
             #자기 이름 써있으면 생기는 이벤트
             for mention in message.mentions:
                 if mention == message.author:
