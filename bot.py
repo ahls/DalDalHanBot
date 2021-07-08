@@ -23,6 +23,7 @@ class server:
         self.team = [{},{}]
         self.numTeams = 2
         self.unassigned = []
+        self.server = 'na1'
 
 def teamScore(dic):
     total = 0
@@ -83,11 +84,11 @@ def tryOpt(team1,team2):
         
     return team1,team2,scoreGain
 
-def getSummonerInfo(userName):
-    summonerInfo = (requests.get('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + userName + '?api_key=' + apikey)).json()
+def getSummonerInfo(userName,gameServer):
+    summonerInfo = (requests.get('https://'+gameServer+'.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + userName + '?api_key=' + apikey)).json()
     return summonerInfo, "id" in summonerInfo
-async def addPlayer(userName,id,pos1,pos2,message,playerPool):
-    leagueInfo = ((requests.get('https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())[0]
+async def addPlayer(userName,id,pos1,pos2,message,playerPool,gameServer):
+    leagueInfo = ((requests.get('https://'+gameServer+'.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())[0]
     playerPool[userName] = (pos1, pos2, rankValueSheet[ rank_score[leagueInfo['rank']]][tier_score[leagueInfo['tier']]])
     await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
 
@@ -193,6 +194,7 @@ print (apikey)
 #게임 참가에 쓰이는 정보
 admins = {"Han#6098","sinnamon#9618"}
 positions = ("top","jg","mid","adc","sup")
+possibleServers = ("br1", "eun1", 'euw1', 'jp1', 'kr', 'la1','la2', 'na1', 'oc1', 'ru', 'tr1')
 tier_score = {"IRON": 0, "BRONZE": 1, "SILVER": 2, "GOLD": 3, "PLATINUM": 4, "DIAMOND": 5, "MASTER": 6, "GRANDMASTER": 7, "CHALLENGER": 8}
 rank_score = {"I":3, "II":2, "III":1, "IV":0}
 #"플레이어 이름" : 포지션1, 포지션2, 총 랭크 점수
@@ -343,15 +345,16 @@ async def on_message(message):
     elif inputMessage == "!help":
         text = \
 "Game Related:\n```\
-1. !참가 <username> <1st position> <2nd position>\n   (if has profile is made) !참가\n\
+1. !참가 or join <username> <1st position> <2nd position>\n   (if has profile is made) !참가\n\
 2. !leave <username>\n\
 3. !NumberOfTeams <number of teams>\n\
-4. !make <\"position\" or \"rank\">```\
+4. !set_server <br1, eun1, euw1, jp1, kr, la1,la2, na1, oc1, ru, tr1>\n\
+5. !make <\"position\" or \"rank\">```\
 Profile Related```\
 1. !profile update <username> <1st position> <2nd positions>\n\
 2. !profile check```\
 Other```\
-1. !샌드백\n\
+1. !결투 <empty or @mention>\n\
 2. !random-pick <number of random champions>\n\
 2. !credit```\
 Debugging```\
@@ -388,8 +391,21 @@ Debugging```\
             
             await message.channel.send(f"Successfully updated the number of players to:{currentServer.numTeams}")
             return
-
-
+        else:
+            await message.channel.send("Something was odd about that command! Check out !help command!")
+            return
+    
+    elif inputMessage.startswith('!set_server'):
+        inputSegment = inputMessage.split()
+        if(inputSegment[-1] in possibleServers):
+            currentServer.server = inputSegment[-1]
+            
+            await message.channel.send(f"Successfully updated the server to:{currentServer.server}")
+            return
+        else:
+            await message.channel.send("Something was odd about that command! Check out !help command!")
+            return
+    
     elif inputMessage == "!checkServerName":
         await message.channel.send(f"current server's name is : {message.guild}")
 
@@ -399,10 +415,10 @@ Debugging```\
     elif inputMessage =='!make rank':
 
         if len(currentServer.players) == 0:
-            await message.channel.send("Weird... Nobody, including yourself, wanted to play...")
+            await message.channel.send(":thinking:\nWeird... Nobody, including yourself, wanted to play...")
             return
         elif len(currentServer.players) == 1:
-            await message.channel.send(f"Nobody wanted to play with {discordName}...")
+            await message.channel.send(f"Nobody wanted to play with {discordName}...\nHow sad :cry:")
             return
      
         teams = [{},{}]
@@ -478,12 +494,12 @@ Debugging```\
 ###############################################################################################################
         
     #참가 스크립트
-    elif inputMessage.startswith('!참가'):
+    elif inputMessage.startswith('!참가') or inputMessage.startswith("!join"):
         joinText = inputMessage.split()
         if len(joinText) == 1 and discordName in profiles:
             userName = profiles[discordName][0]
-            SummonerInfo,found = getSummonerInfo(userName)
-            await addPlayer(userName,SummonerInfo['id'],profiles[discordName][1],profiles[discordName][2],message,currentServer.players)
+            SummonerInfo,found = getSummonerInfo(userName,currentServer.server)
+            await addPlayer(userName,SummonerInfo['id'],profiles[discordName][1],profiles[discordName][2],message,currentServer.players,currentServer.server)
             return
         elif len(joinText) < 4:
             await message.channel.send('!참가 <username> <1st position> <2nd position>')
@@ -495,14 +511,14 @@ Debugging```\
         userName = "".join(joinText[1:-2])
         userName = userName.lower()
         print(f"Current User name:'{userName}'")
-        SummonerInfo, found = getSummonerInfo(userName)
+        SummonerInfo, found = getSummonerInfo(userName,currentServer.server)
         if not found:
-            await message.channel.send(f'```User name {userName} was NOT found!\nPlease check the name again!```')
+            await message.channel.send(f'```User name {userName} was NOT found!\nPlease check the name or this channel\'s server!!```')
             return
         if userName in currentServer.players:
             await message.channel.send(f'```{userName} is already joined!```')
             return
-        await addPlayer(userName,SummonerInfo['id'],joinText[-2], joinText[-1],message,currentServer.players)
+        await addPlayer(userName,SummonerInfo['id'],joinText[-2], joinText[-1],message,currentServer.players,currentServer.server)
         return
         
     #퇴장 스크립트
