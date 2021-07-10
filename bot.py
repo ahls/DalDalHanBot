@@ -347,9 +347,10 @@ async def on_message(message):
 "Game Related:\n```\
 1. !참가 or join <username> <1st position> <2nd position>\n   (if has profile is made) !참가\n\
 2. !leave <username>\n\
-3. !NumberOfTeams <number of teams>\n\
-4. !set_server <br1, eun1, euw1, jp1, kr, la1,la2, na1, oc1, ru, tr1>\n\
-5. !make <\"position\" or \"rank\">```\
+3. !flush\n\
+4. !NumberOfTeams <number of teams>\n\
+5. !set_server <br1, eun1, euw1, jp1, kr, la1,la2, na1, oc1, ru, tr1>\n\
+6. !make <\"position\" or \"rank\">```\
 Profile Related```\
 1. !profile update <username> <1st position> <2nd positions>\n\
 2. !profile check```\
