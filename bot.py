@@ -546,7 +546,12 @@ Debugging```\
         else:
             await message.channel.send(f'```Player {userName} does not exist!```')
         
-       
+    #flush/leave all
+    elif inputMessage.startswith('!flush'):
+        await message.channel.send('```starting to flush all players...```')
+        currentServer.players = {}
+        await message.channel.send('```...all players are LEFT```')
+     
 
 ##################################################################################################################################
     #Profile script
