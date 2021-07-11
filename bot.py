@@ -12,7 +12,8 @@ import numpy as np
 #df = pd.read_excel(r'fight.xlsx')
 rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
 #print(rankValueSheet)
-
+tier_score = {"IRON": 0, "BRONZE": 1, "SILVER": 2, "GOLD": 3, "PLATINUM": 4, "DIAMOND": 5, "MASTER": 6, "GRANDMASTER": 7, "CHALLENGER": 8}
+rank_score = {"I":3, "II":2, "III":1, "IV":0}
 
 
 
@@ -25,36 +26,36 @@ class server:
         self.unassigned = []
         self.server = 'na1'
 
+class playerInfo:
+    def __init__(self, _pos1 = None, _pos2 = None,  _rank = "IV", _tier = "IRON"):
+        self.pos1 = _pos1
+        self.pos2 = _pos2
+        self.rank = _rank
+        self.tier = _tier
+        print(rank_score)
+        print(tier_score)
+        self.score = rankValueSheet[ rank_score[_rank]][tier_score[_tier]]
+        
+       
 def teamScore(dic):
     total = 0
     for i in dic.keys():
         total += dic[i][2]
     return total
 
-def initAssignment(givenList):
-    team1 = {}
-    team2 = {}
-    team1Score = team2Score = 0;    
-    #print (givenList)
-    #print (givenList.keys())
-    for i in givenList.keys():
-        #print (givenList[i][2])
-        if(team1Score < team2Score):
-            if(len(team1) < 5):
-                team1[i]=givenList[i]
-                team1Score += givenList[i][2]
-            else:
-                team2[i]=givenList[i]
-                team2Score += givenList[i][2]
-                
-        else:
-            if(len(team2) < 5):
-                team2[i]=givenList[i]
-                team2Score += givenList[i][2]
-            else:
-                team1[i]=givenList[i]
-                team1Score += givenList[i][2]
-    return team1, team2
+def initAssignment(numTeams, PlayerList):
+    teamScores = []
+    teams = []
+    for team in range(numTeams):
+        teamScores.append(0)
+        teams.append({})
+    #팀 갯수에 맞게 팀 을 설정함
+    #그룹의 갯수
+    for i,playerName in enumerate(PlayerList.keys()):
+        #포지션 상관 없이 각 팀마다 점수 높은 순서대로 플레이어를 넣되, 넣는 포맷은 [{이름:점수, 이름2:점수2},...]
+        teams[i%numTeams][playerName] = PlayeList[playerName].score
+
+    return teams
 
 
 def tryOpt(team1,team2):
@@ -89,7 +90,7 @@ def getSummonerInfo(userName,gameServer):
     return summonerInfo, "id" in summonerInfo
 async def addPlayer(userName,id,pos1,pos2,message,playerPool,gameServer):
     leagueInfo = ((requests.get('https://'+gameServer+'.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())[0]
-    playerPool[userName] = (pos1, pos2, rankValueSheet[ rank_score[leagueInfo['rank']]][tier_score[leagueInfo['tier']]])
+    playerPool[userName] = playerInfo(pos1, pos2, leagueInfo['rank'],leagueInfo['tier'])
     await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
 
 async def positionCheck(input1,input2,message):
@@ -102,22 +103,22 @@ async def positionCheck(input1,input2,message):
     return True
     
 def position_assign_one_p(player,teams,unassigned):
-    preference = player[1][0:2]
+
     score = player[1][2]
     name = player[0]
-    if (preference[0] in teams[0]):
-        if (preference[0] in teams[1]):
-            if(preference[1] in teams[0]):
-                if(preference[1] in teams[1]):
+    if (player[1].pos1 in teams[0]):
+        if (player[1].pos1 in teams[1]):
+            if(player[1].pos2 in teams[0]):
+                if(player[1].pos2 in teams[1]):
                     unassigned.append([name, score])
                 else :
-                    teams[1][preference[1]] = [name, score]
+                    teams[1][player[1].pos2] = [name, score]
             else :
-                teams[0][preference[1]] = [name, score]
+                teams[0][player[1].pos2] = [name, score]
         else :
-            teams[1][preference[0]] = [name, score]
+            teams[1][player[1].pos1] = [name, score]
     else :
-        teams[0][preference[0]] = [name, score]
+        teams[0][player[1].pos1] = [name, score]
 
 #put unassinged ppl to teams
 def assign_unassigned(person,teams):
@@ -195,8 +196,7 @@ print (apikey)
 admins = {"Han#6098","sinnamon#9618"}
 positions = ("top","jg","mid","adc","sup")
 possibleServers = ("br1", "eun1", 'euw1', 'jp1', 'kr', 'la1','la2', 'na1', 'oc1', 'ru', 'tr1')
-tier_score = {"IRON": 0, "BRONZE": 1, "SILVER": 2, "GOLD": 3, "PLATINUM": 4, "DIAMOND": 5, "MASTER": 6, "GRANDMASTER": 7, "CHALLENGER": 8}
-rank_score = {"I":3, "II":2, "III":1, "IV":0}
+
 #"플레이어 이름" : 포지션1, 포지션2, 총 랭크 점수
 profiles = {} #"디스코드 이름: 게임내 이름, 포지션 1, 포지션 2"
 numTeams = 2
@@ -322,7 +322,7 @@ async def on_message(message):
             return
         quit()
         
-    elif inputMessage == "!ㅂㅂ":
+    elif inputMessage == "!ㅂㅂ" or inputMessage == "!qq":
         if not str(message.author) in admins:
             await message.channel.send('INVALID ATTEMPT')
             return
@@ -335,9 +335,14 @@ async def on_message(message):
         
     #listing current players
     elif inputMessage == "!list":
-        sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=False)
+        print(currentServer.players, "야옹")
+        print(currentServer.players.items(),"유미")
+        sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1].score, reverse=False)
         if (len(currentServer.players) != 0) :
-            await message.channel.send(sorted_players)
+            textToDisplay = ""
+            for playerName in currentServer.players:
+                textToDisplay += playerName + ": " + currentServer.players[playerName].tier + currentServer.players[playerName].rank + "\n"
+            await message.channel.send(textToDisplay)
         else :
             await message.channel.send("No players")            
         return
@@ -388,10 +393,14 @@ Debugging```\
     elif inputMessage.startswith('!NumberOfTeams'):
         inputSegment = inputMessage.split()
         if(inputSegment[-1].isnumeric()):
+            if(inputSEgment[-1] < 2):
+                await message.channel.send("Really?")
+                return
             currentServer.numTeams = inputSegment[-1]
             
             await message.channel.send(f"Successfully updated the number of players to:{currentServer.numTeams}")
             return
+            
         else:
             await message.channel.send("Something was odd about that command! Check out !help command!")
             return
@@ -422,7 +431,9 @@ Debugging```\
             await message.channel.send(f"Nobody wanted to play with {discordName}...\nHow sad :cry:")
             return
      
-        teams = [{},{}]
+        teams = []
+        for i in range(currentServer.numTeams):
+            teams.append({})
         teams[0],teams[1] = initAssignment(currentServer.players)
         print("init value-----------")
 
@@ -460,7 +471,7 @@ Debugging```\
         if len(currentServer.players) != numTeams * 5:
             await message.channel.send("Not enough players are available.")
             return
-        sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=False)
+        sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1].score, reverse=False)
         print(sorted_players)
         for player in sorted_players :
             position_assign_one_p(player,teams,currentServer.unassigned)
@@ -496,7 +507,8 @@ Debugging```\
         
     #참가 스크립트
     elif inputMessage.startswith('!참가') or inputMessage.startswith("!join"):
-        joinText = inputMessage.split()     
+        joinText = inputMessage.split()   
+        #프로필 이용해서 참가 할때
         if len(joinText) == 1 and discordName in profiles:
             userName = profiles[discordName][0]
             SummonerInfo,found = getSummonerInfo(userName,currentServer.server)
@@ -551,6 +563,7 @@ Debugging```\
     elif inputMessage.startswith('!flush'):
         await message.channel.send('```starting to flush all players...```')
         currentServer.players = {}
+        
         await message.channel.send('```...all players are LEFT```')
      
 
