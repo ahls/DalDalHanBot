@@ -14,7 +14,7 @@ rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
 #print(rankValueSheet)
 tier_score = {"IRON": 0, "BRONZE": 1, "SILVER": 2, "GOLD": 3, "PLATINUM": 4, "DIAMOND": 5, "MASTER": 6, "GRANDMASTER": 7, "CHALLENGER": 8}
 rank_score = {"I":3, "II":2, "III":1, "IV":0}
-
+#날씨 좋다 :)
 
 
 
