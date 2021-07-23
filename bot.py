@@ -450,7 +450,14 @@ Debugging```\
         await message.channel.send(print_str)
         #await message.channel.send(f"team1 = {list(team1.keys())}")
         #await message.channel.send(f"team2 = {list(team2.keys())}")
-        await message.channel.send(f"diff in teams: {abs(teamScore(teams[0]) - teamScore(teams[1]))}")
+        if teamScore(teams[0]) - teamScore(teams[1]) > 0:
+            #team 0 seems to winner
+            await message.channel.send(f"Team 1 have the upper hand for {abs(teamScore(teams[0]) - teamScore(teams[1]))} points")
+        elif teamScore(teams[0]) - teamScore(teams[1]) == 0:
+            await message.channel.send(f"Team 1 and Team 2 has same score")
+        elif teamScore(teams[0]) - teamScore(teams[1]) < 0:
+            await message.channel.send(f"Team 2 have the upper hand for {abs(teamScore(teams[0]) - teamScore(teams[1]))} points")              
+        #await message.channel.send(f"diff in teams: {abs(teamScore(teams[0]) - teamScore(teams[1]))}")
 
 
 
