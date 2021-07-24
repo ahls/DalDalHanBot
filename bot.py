@@ -13,10 +13,6 @@ import numpy as np
 rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
 #print(rankValueSheet)
 
-
-
-
-
 class server:
     def __init__(self):
         self.players = {}
@@ -56,6 +52,84 @@ def initAssignment(givenList):
                 team1Score += givenList[i][2]
     return team1, team2
 
+def initAssignment3(givenList):
+    #WORKING ON THIS HAN
+    team1 = {}
+    team2 = {}
+    team3 = {}
+    team1Score = team2Score = team3Score = 0;    
+    #print (givenList)
+    #print (givenList.keys())
+    for index, i in enumerate(givenList.keys()):
+        if index%3 == 0:
+            team1[i] = givenList[i]
+            team1Score += givenList[i][2]
+        elif index%3 == 1:
+            team2[i] = givenList[i]
+            team2Score += givenList[i][2]
+        elif index%3 == 2:
+            team3[i] = givenList[i]
+            team3Score += givenList[i][2]        #print (givenList[i][2])
+    return team1, team2, team3
+
+def tryOpt3(team1,team2,team3):
+    #WORKING ON THIS HAN
+    team1Score = teamScore(team1)
+    team2Score = teamScore(team2)
+    team3Score = teamScore(team3)
+    over_avg = {}
+    right_avg = {}
+    under_avg = {}
+    totalScore = team1Score + team2Score + team3Score
+    #FIXME : << has problem
+    if (totalScore - 3*team1Score) > 0:
+        over_avg << team1
+    elif (totalScore - 3*team1Score) == 0:
+        right_avg << team1
+    elif (totalScore - 3*team1Score) < 0:
+        under_avg << team1
+
+    if (totalScore - 3*team2Score) > 0:
+        over_avg << team2
+    elif (totalScore - 3*team2Score) == 0:
+        right_avg << team2
+    elif (totalScore - 3*team2Score) < 0:
+        under_avg << team2
+
+    if (totalScore - 3*team3Score) > 0:
+        over_avg << team3
+    elif (totalScore - 3*team3Score) == 0:
+        right_avg << team3
+    elif (totalScore - 3*team3Score) < 0:
+        under_avg << team3
+
+    if (team1Score == team2Score) and (team1Score == team3Score):
+        return team1, team2, team3, 0
+
+    print (over_avg)
+    print (right_avg)
+    print (under_avg)
+
+    #if + -> team 1 more score. if - -> team2 more score
+    bestDiff = 99
+    bestMember1 = -1
+    bestMember2 = -1
+    for member1 in (team1.keys()):
+        for  member2 in (team2.keys()):
+            tempDiff = abs(diff - 2 * (team1[member1][2] - team2[member2][2]))
+            if tempDiff < bestDiff :
+                bestDiff = tempDiff
+                bestMember1 = member1
+                bestMember2 = member2
+    scoreGain = abs(diff)-bestDiff
+    
+    if(bestMember1 != -1 and bestMember2 != -1):
+        team1[bestMember2]= team2[bestMember2]
+        team2[bestMember1]= team1[bestMember1]
+        team1.pop(bestMember1)
+        team2.pop(bestMember2)
+        
+    return team1,team2,team3,scoreGain
 
 def tryOpt(team1,team2):
     team1Score = teamScore(team1)
@@ -458,6 +532,59 @@ Debugging```\
         elif teamScore(teams[0]) - teamScore(teams[1]) < 0:
             await message.channel.send(f"Team 2 have the upper hand for {abs(teamScore(teams[0]) - teamScore(teams[1]))} points")              
         #await message.channel.send(f"diff in teams: {abs(teamScore(teams[0]) - teamScore(teams[1]))}")
+
+    elif inputMessage =='!make rank3':
+
+        if len(currentServer.players) == 0:
+            await message.channel.send(":thinking:\nWeird... Nobody, including yourself, wanted to play...")
+            return
+        elif len(currentServer.players) == 1:
+            await message.channel.send(f"Nobody wanted to play with {discordName}...\nHow sad :cry:")
+            return
+        elif len(currentServer.players) == 2:
+            await message.channel.send(f"!make rank3 is not allowed for two people :zany_face:")
+            return 
+
+        teams = [{},{},{}]
+        #WORKING ON THIS HAN
+        teams[0],teams[1],teams[2] = initAssignment3(currentServer.players)
+        print (teams[0])
+        print("init value-----------")
+
+        print(f"{teams[0]} - total = {teamScore(teams[0])}")
+        print(f"{teams[1]} - total = {teamScore(teams[1])}")
+        print(f"{teams[2]} - total = {teamScore(teams[2])}")
+        print(f"total score for teams: team1 = {teamScore(teams[0])}, team2 = {teamScore(teams[1])}, team3 = {teamScore(teams[2])}")
+        #NEED TO WORK tryOpt3 thing
+        # scoreGained = 99
+        # limitCounter = 100
+        # while(scoreGained != 0 and limitCounter > 0):
+        #     teams[0],teams[1],teams[2],scoreGained = tryOpt3(teams[0],teams[1],teams[2])
+        #     limitCounter -= 1
+        # print("value after opt-----------")
+        # print("diff in teams:", abs(teamScore(teams[0]) - teamScore(teams[1])))
+        #await message.channel.send(f"team1 = {team1}")
+        print_str = "**Team 1:**\n```"
+        for index,key in enumerate(teams[0].keys()):
+            print_str += f"\t{index+1}. \t{key}\n"
+        print_str += "```"
+        await message.channel.send(print_str)
+        print_str = "**Team 2:**\n```"
+        for index,key in enumerate(teams[1].keys()):
+            #print (f"\t{index}. \t{key}\n")
+            print_str += f"\t{index+1}. \t{key}\n"
+        print_str += "```"
+        await message.channel.send(print_str)
+        print_str = "**Team 3:**\n```"
+        for index,key in enumerate(teams[2].keys()):
+            #print (f"\t{index}. \t{key}\n")
+            print_str += f"\t{index+1}. \t{key}\n"
+        print_str += "```"
+        await message.channel.send(print_str)
+
+        await message.channel.send(f"Team 1 score : {teamScore(teams[0])} points")
+        await message.channel.send(f"Team 2 score : {teamScore(teams[1])} points")
+        await message.channel.send(f"Team 3 score : {teamScore(teams[2])} points")
 
 
 
