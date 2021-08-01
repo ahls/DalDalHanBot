@@ -718,7 +718,7 @@ Debugging```\
 
             userName = "".join(profileText[2:-2])
             userName = userName.lower()      
-            SummonerInfo, found = getSummonerInfo(userName)
+            SummonerInfo, found = getSummonerInfo(userName, currentServer.server)
             if not found:
                 await message.channel.send(f'```User name {userName} was NOT found!\nPlease check the name again!```')
                 return
