@@ -77,59 +77,67 @@ def tryOpt3(team1,team2,team3):
     team1Score = teamScore(team1)
     team2Score = teamScore(team2)
     team3Score = teamScore(team3)
-    over_avg = {}
-    right_avg = {}
-    under_avg = {}
+
+    over_avg = []
+    right_avg = []
+    under_avg = []
+
     totalScore = team1Score + team2Score + team3Score
-    #FIXME : << has problem
-    if (totalScore - 3*team1Score) > 0:
-        over_avg << team1
+
+    allteam = {"0":[team1, totalScore - 3*team1Score], "1":[team2, totalScore - 3*team2Score], "2":[team3, totalScore - 3*team3Score]}
+
+    #0 means team1, 1 means team2, 2 means team3
+    if (totalScore - 3*team1Score) < 0:
+        over_avg.append("0")
     elif (totalScore - 3*team1Score) == 0:
-        right_avg << team1
-    elif (totalScore - 3*team1Score) < 0:
-        under_avg << team1
+        right_avg.append("0")
+    elif (totalScore - 3*team1Score) > 0:
+        under_avg.append("0")
 
-    if (totalScore - 3*team2Score) > 0:
-        over_avg << team2
+    if (totalScore - 3*team2Score) < 0:
+        over_avg.append("1")
     elif (totalScore - 3*team2Score) == 0:
-        right_avg << team2
-    elif (totalScore - 3*team2Score) < 0:
-        under_avg << team2
+        right_avg.append("1")
+    elif (totalScore - 3*team2Score) > 0:
+        under_avg.append("1")
 
-    if (totalScore - 3*team3Score) > 0:
-        over_avg << team3
+    if (totalScore - 3*team3Score) < 0:
+        over_avg.append("2")
     elif (totalScore - 3*team3Score) == 0:
-        right_avg << team3
-    elif (totalScore - 3*team3Score) < 0:
-        under_avg << team3
+        right_avg.append("2")
+    elif (totalScore - 3*team3Score) > 0:
+        under_avg.append("2")
 
     if (team1Score == team2Score) and (team1Score == team3Score):
-        return team1, team2, team3, 0
+        return team1, team2, team3
 
-    print (over_avg)
-    print (right_avg)
-    print (under_avg)
-
-    #if + -> team 1 more score. if - -> team2 more score
-    bestDiff = 99
-    bestMember1 = -1
-    bestMember2 = -1
-    for member1 in (team1.keys()):
-        for  member2 in (team2.keys()):
-            tempDiff = abs(diff - 2 * (team1[member1][2] - team2[member2][2]))
-            if tempDiff < bestDiff :
-                bestDiff = tempDiff
-                bestMember1 = member1
-                bestMember2 = member2
-    scoreGain = abs(diff)-bestDiff
-    
-    if(bestMember1 != -1 and bestMember2 != -1):
-        team1[bestMember2]= team2[bestMember2]
-        team2[bestMember1]= team1[bestMember1]
-        team1.pop(bestMember1)
-        team2.pop(bestMember2)
+    #FIXME: Now need to calculation in this for loop
+    for overteam in over_avg:
+        for underteam in under_avg:
+            bestDiff = 99
+            bestMember1 = -1
+            bestMember2 = -1
+            for member1 in (allteam[overteam][0].keys()):
+                for  member2 in (allteam[underteam][0].keys()):
+                    if abs(allteam[overteam][1]) >= abs(allteam[underteam][1]):
+                        diff = abs(allteam[underteam][1])
+                    else:
+                        diff = abs(allteam[overteam][1])
+                    tempDiff = abs(diff - 2 * ( allteam[overteam][0][member1][2] - allteam[underteam][0][member2][2]))
+                    if tempDiff < bestDiff :
+                        print ("this")
+                        print (tempDiff)
+                        print (bestDiff)
+                        bestDiff = tempDiff
+                        bestMember1 = member1
+                        bestMember2 = member2
+            if(bestMember1 != -1 and bestMember2 != -1):   
+                allteam[underteam][0][bestMember1]= allteam[overteam][0][bestMember1]
+                allteam[overteam][0][bestMember2]= allteam[underteam][0][bestMember2]
+                allteam[underteam][0].pop(bestMember2)
+                allteam[overteam][0].pop(bestMember1)
         
-    return team1,team2,team3,scoreGain
+    return team1,team2,team3
 
 def tryOpt(team1,team2):
     team1Score = teamScore(team1)
@@ -556,13 +564,14 @@ Debugging```\
         print(f"{teams[2]} - total = {teamScore(teams[2])}")
         print(f"total score for teams: team1 = {teamScore(teams[0])}, team2 = {teamScore(teams[1])}, team3 = {teamScore(teams[2])}")
         #NEED TO WORK tryOpt3 thing
-        # scoreGained = 99
-        # limitCounter = 100
-        # while(scoreGained != 0 and limitCounter > 0):
-        #     teams[0],teams[1],teams[2],scoreGained = tryOpt3(teams[0],teams[1],teams[2])
-        #     limitCounter -= 1
-        # print("value after opt-----------")
-        # print("diff in teams:", abs(teamScore(teams[0]) - teamScore(teams[1])))
+        #scoreGained = 99
+        limitCounter = 50
+        while(limitCounter > 0):
+            #teams[0],teams[1],teams[2],scoreGained = tryOpt3(teams[0],teams[1],teams[2])
+            teams[0],teams[1],teams[2] = tryOpt3(teams[0],teams[1],teams[2])
+            limitCounter -= 1
+        print("value after opt-----------")
+        print(f"total score for teams: team1 = {teamScore(teams[0])}, team2 = {teamScore(teams[1])}, team3 = {teamScore(teams[2])}")
         #await message.channel.send(f"team1 = {team1}")
         print_str = "**Team 1:**\n```"
         for index,key in enumerate(teams[0].keys()):
