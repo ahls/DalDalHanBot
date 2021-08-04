@@ -429,7 +429,7 @@ async def on_message(message):
 "Game Related:\n```\
 1. !참가 or join <username> <1st position> <2nd position>\n   (if has profile is made) !참가\n\
 2. !leave <username>\n\
-3. !flush\n\
+3. !flush (only available for Admins)\n\
 4. !NumberOfTeams <number of teams>\n\
 5. !set_server <br1, eun1, euw1, jp1, kr, la1,la2, na1, oc1, ru, tr1>\n\
 6. !make <\"position\" or \"rank\">```\
@@ -439,7 +439,8 @@ Profile Related```\
 Other```\
 1. !결투 <empty or @mention>\n\
 2. !random-pick <number of random champions>\n\
-2. !credit```\
+3. !credit\n\
+4. !checkrole```\
 Debugging```\
 1. !test\n\
 2. !list\n\
@@ -691,11 +692,24 @@ Debugging```\
             await message.channel.send(f'```Player {userName} does not exist!```')
         
     #flush/leave all
-    elif inputMessage.startswith('!flush'):
+    elif inputMessage == '!flush':
         await message.channel.send('```starting to flush all players...```')
-        currentServer.players = {}
-        await message.channel.send('```...all players are LEFT```')
+        if str(message.author) in admins:
+            currentServer.players = {}
+            await message.channel.send('```...all players are LEFT```')
+        elif message.author.guild_permissions.administrator:
+            currentServer.players = {}
+            await message.channel.send('```...all players are LEFT```')
+        else :
+            await message.channel.send(f'```Only Admin can flush list```')       
      
+    elif inputMessage == '!checkrole':
+        if str(message.author) in admins:
+            await message.channel.send(f'```{discordName} is developer```')
+        elif message.author.guild_permissions.administrator:
+            await message.channel.send(f'```{discordName} is admin```')
+        else :
+            await message.channel.send(f'```{discordName} is joiner```')
 
 ##################################################################################################################################
     #Profile script
