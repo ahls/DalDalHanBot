@@ -170,8 +170,11 @@ def getSummonerInfo(userName,gameServer):
     summonerInfo = (requests.get('https://'+gameServer+'.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + userName + '?api_key=' + apikey)).json()
     return summonerInfo, "id" in summonerInfo
 async def addPlayer(userName,id,pos1,pos2,message,playerPool,gameServer):
-    leagueInfo = ((requests.get('https://'+gameServer+'.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())[0]
-    playerPool[userName] = (pos1, pos2, rankValueSheet[ rank_score[leagueInfo['rank']]][tier_score[leagueInfo['tier']]])
+    data = ((requests.get('https://'+gameServer+'.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())
+    leagueInfo = [{ k:v for (k, v) in i.items()} for i in data if i.get('queueType') == 'RANKED_SOLO_5x5']
+
+    playerPool[userName] = (pos1, pos2, 
+        rankValueSheet[ rank_score[leagueInfo[0]['rank']]][tier_score[leagueInfo[0]['tier']]])
     await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
 
 async def positionCheck(input1,input2,message):
