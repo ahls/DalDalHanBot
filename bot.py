@@ -176,9 +176,11 @@ async def addPlayer(userName,id,pos1,pos2,message,playerPool,gameServer):
     data = ((requests.get('https://'+gameServer+'.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())
     leagueInfo = [{ k:v for (k, v) in i.items()} for i in data if i.get('queueType') == 'RANKED_SOLO_5x5']
 
+    printrank = leagueInfo[0]['rank']
+    printtier = leagueInfo[0]['tier']
     playerPool[userName] = (pos1, pos2, 
         rankValueSheet[ rank_score[leagueInfo[0]['rank']]][tier_score[leagueInfo[0]['tier']]])
-    await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
+    await message.channel.send(f'```Player {userName} successfully JOINED! (Tier: {printtier}, Rank: {printrank})\n# of Currently joined players: {len(playerPool)}```')
 
 async def positionCheck(input1,input2,message):
     if input1 == input2:
