@@ -440,7 +440,9 @@ async def on_message(message):
 3. !flush (only available for Admins)\n\
 4. !NumberOfTeams <number of teams>\n\
 5. !set_server <br1, eun1, euw1, jp1, kr, la1,la2, na1, oc1, ru, tr1>\n\
-6. !make <\"position\" or \"rank\">```\
+6. !make <\"position\" or \"rank\">\n\
+7. !team-lead leader <first leader-discord name-> <second leader-discord name->\n\
+8. !team-lead select <player-league user name->```\
 Profile Related```\
 1. !profile update <username> <1st position> <2nd positions>\n\
 2. !profile check```\
@@ -453,7 +455,7 @@ Debugging```\
 1. !test\n\
 2. !list\n\
 3. !ㅂㅂ or !quit```"
-        
+
         await message.channel.send(text)
 ##############################################################################################################
     #MAKE RANDOM PICK
