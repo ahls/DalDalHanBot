@@ -13,6 +13,8 @@ import numpy as np
 rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
 #print(rankValueSheet)
 
+#team1score = 0
+#team2score = 0
 class server:
     def __init__(self):
         self.players = {}
@@ -20,6 +22,9 @@ class server:
         self.numTeams = 2
         self.unassigned = []
         self.server = 'na1'
+        self.teamsFSM = {}
+        self.remain_dic = {}
+        self.currentLeader = ''
 
 def teamScore(dic):
     total = 0
@@ -53,7 +58,6 @@ def initAssignment(givenList):
     return team1, team2
 
 def initAssignment3(givenList):
-    #WORKING ON THIS HAN
     team1 = {}
     team2 = {}
     team3 = {}
@@ -73,7 +77,6 @@ def initAssignment3(givenList):
     return team1, team2, team3
 
 def tryOpt3(team1,team2,team3):
-    #WORKING ON THIS HAN
     team1Score = teamScore(team1)
     team2Score = teamScore(team2)
     team3Score = teamScore(team3)
@@ -173,9 +176,11 @@ async def addPlayer(userName,id,pos1,pos2,message,playerPool,gameServer):
     data = ((requests.get('https://'+gameServer+'.api.riotgames.com/lol/league/v4/entries/by-summoner/' + id + '?api_key=' + apikey)).json())
     leagueInfo = [{ k:v for (k, v) in i.items()} for i in data if i.get('queueType') == 'RANKED_SOLO_5x5']
 
+    printrank = leagueInfo[0]['rank']
+    printtier = leagueInfo[0]['tier']
     playerPool[userName] = (pos1, pos2, 
         rankValueSheet[ rank_score[leagueInfo[0]['rank']]][tier_score[leagueInfo[0]['tier']]])
-    await message.channel.send(f'```Player {userName} successfully JOINED!\n# of Currently joined players: {len(playerPool)}```')
+    await message.channel.send(f'```Player {userName} successfully JOINED! (Tier: {printtier}, Rank: {printrank})\n# of Currently joined players: {len(playerPool)}```')
 
 async def positionCheck(input1,input2,message):
     if input1 == input2:
@@ -270,11 +275,11 @@ def adjust_score(teams):
 load_dotenv()
 #봇 연결에 필요한 정보
 TOKEN = os.environ['DISCORD_TOKEN']
-GUILD = os.environ['DISCORD_GUILD']
+#GUILD = os.environ['DISCORD_GUILD']
 apikey = os.environ['API_KEY']
 
 print (TOKEN)
-print (GUILD)
+#print (GUILD)
 print (apikey)
 #게임 참가에 쓰이는 정보
 admins = {"Han#6098","sinnamon#9618"}
@@ -357,12 +362,18 @@ except IOError:
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
+    GUILD = []
+    async for guild_fetch in client.fetch_guilds(limit=150):
+        GUILD.append(guild_fetch.name)
     print(f"Allowed servers: {GUILD}")
     for guild in client.guilds:
     
         print(guild.name)
         servers[guild.name] = server()
         print("Was added to the servers list")
+        #print (client.fetch_guilds(limit=150))
+        #print (list(client.fetch_guilds(limit=150)))
+        #print (list(client.fetch_guilds(limit=150).flatten()))
         if not guild.name in GUILD:
             print("being broken")
             break
@@ -386,6 +397,10 @@ async def on_message(message):
     currentServer = servers[message.guild.name]
     if message.content.startswith('!test'):
         await message.channel.send('Hello world!')
+       
+        #checking = await client.fetch_guilds(limit=150).flatten()
+        #checking = discord.Guild.name
+        #await message.channel.send(checking)
     elif inputMessage == "!load":
         if not str(message.author) in admins:
             await message.channel.send('INVALID ATTEMPT')
@@ -522,7 +537,6 @@ Debugging```\
             limitCounter -= 1
         print("value after opt-----------")
         print("diff in teams:", abs(teamScore(teams[0]) - teamScore(teams[1])))
-        #await message.channel.send(f"team1 = {team1}")
         print_str = "**Team 1:**\n```"
         for index,key in enumerate(teams[0].keys()):
             print_str += f"\t{index+1}. \t{key}\n"
@@ -543,7 +557,6 @@ Debugging```\
             await message.channel.send(f"Team 1 and Team 2 has same score")
         elif teamScore(teams[0]) - teamScore(teams[1]) < 0:
             await message.channel.send(f"Team 2 have the upper hand for {abs(teamScore(teams[0]) - teamScore(teams[1]))} points")              
-        #await message.channel.send(f"diff in teams: {abs(teamScore(teams[0]) - teamScore(teams[1]))}")
 
     elif inputMessage =='!make rank3':
 
@@ -558,7 +571,6 @@ Debugging```\
             return 
 
         teams = [{},{},{}]
-        #WORKING ON THIS HAN
         teams[0],teams[1],teams[2] = initAssignment3(currentServer.players)
         print (teams[0])
         print("init value-----------")
@@ -567,16 +579,13 @@ Debugging```\
         print(f"{teams[1]} - total = {teamScore(teams[1])}")
         print(f"{teams[2]} - total = {teamScore(teams[2])}")
         print(f"total score for teams: team1 = {teamScore(teams[0])}, team2 = {teamScore(teams[1])}, team3 = {teamScore(teams[2])}")
-        #NEED TO WORK tryOpt3 thing
         #scoreGained = 99
         limitCounter = 50
         while(limitCounter > 0):
-            #teams[0],teams[1],teams[2],scoreGained = tryOpt3(teams[0],teams[1],teams[2])
             teams[0],teams[1],teams[2] = tryOpt3(teams[0],teams[1],teams[2])
             limitCounter -= 1
         print("value after opt-----------")
         print(f"total score for teams: team1 = {teamScore(teams[0])}, team2 = {teamScore(teams[1])}, team3 = {teamScore(teams[2])}")
-        #await message.channel.send(f"team1 = {team1}")
         print_str = "**Team 1:**\n```"
         for index,key in enumerate(teams[0].keys()):
             print_str += f"\t{index+1}. \t{key}\n"
@@ -584,13 +593,11 @@ Debugging```\
         await message.channel.send(print_str)
         print_str = "**Team 2:**\n```"
         for index,key in enumerate(teams[1].keys()):
-            #print (f"\t{index}. \t{key}\n")
             print_str += f"\t{index+1}. \t{key}\n"
         print_str += "```"
         await message.channel.send(print_str)
         print_str = "**Team 3:**\n```"
         for index,key in enumerate(teams[2].keys()):
-            #print (f"\t{index}. \t{key}\n")
             print_str += f"\t{index+1}. \t{key}\n"
         print_str += "```"
         await message.channel.send(print_str)
@@ -617,8 +624,6 @@ Debugging```\
             print("ADJUSTMENT IS BEING MADE")
             if not adjust_score(teams):
                 break
-        #await message.channel.send(f"team1 = {teams[0]}")
-        #await message.channel.send(f"team2 = {teams[1]}")
         
         print (teams[0])
         print (teams[1])
@@ -639,6 +644,66 @@ Debugging```\
         print_str += "```"
         await message.channel.send(print_str)
         await message.channel.send(f"diff in teams: {abs( team0_score- team1_score)}")
+
+    elif inputMessage.startswith('!team-lead'):
+        joinText = inputMessage.split() 
+        if len(joinText) < 3:
+            await message.channel.send('!team-lead leader <first leader-discord name-> <second leader-discord name->')
+            await message.channel.send('!team-lead select <joiner-league user name->')
+            return            
+
+        if joinText[1] == 'leader':
+            if len(message.mentions) != 2:
+                await message.channel.send('only available for two teams')
+                return
+
+            currentServer.remain_dic = dict(sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=True))
+
+            for mentioned in message.mentions:
+                currentServer.teamsFSM[mentioned.name] = [0,]
+
+            #make first team get the first shot
+            currentServer.currentLeader = message.mentions[0].name
+
+            await message.channel.send(f'select first player, {currentServer.currentLeader}')
+            await message.channel.send(f'Available player list: {list(currentServer.remain_dic.keys())}')
+        elif joinText[1] == 'select':
+            key0,key1 = currentServer.teamsFSM.keys()
+            val0 = currentServer.teamsFSM[key0]
+            val1 = currentServer.teamsFSM[key1]
+
+            selected_player = joinText[2:]
+            selected_player_str = ' '.join([str(elem) for elem in selected_player])
+
+            if (message.author.name != currentServer.currentLeader) : 
+                await message.channel.send(f'You are not team leader, {message.author.name}')
+                return              
+            if (selected_player_str not in list(currentServer.remain_dic.keys() )) :
+                #invalid username
+                await message.channel.send(f'This player is not in the list. List: {list(currentServer.remain_dic.keys())}')
+                return 
+                
+            #1. username need to insert to FSM, 2. score for the FSM should be added, 3. discord print      
+            currentServer.teamsFSM[message.author.name].append(selected_player_str)
+            currentServer.teamsFSM[message.author.name][0] += currentServer.remain_dic[selected_player_str][2] 
+            currentServer.remain_dic.pop(selected_player_str) 
+            await message.channel.send(f'player {selected_player_str} is added to fight team')
+            await message.channel.send(f'Your team score: {currentServer.teamsFSM[message.author.name][0]}')
+
+            if (currentServer.teamsFSM[key0][0] < currentServer.teamsFSM[key1][0]):
+                currentServer.currentLeader = key0
+            else:
+                currentServer.currentLeader = key1
+
+            if(currentServer.remain_dic == {}):
+                await message.channel.send(f'No more selectable player')
+                await message.channel.send(f'Team1 : Leader = {key0}, [Total Score, Member] = {val0}')
+                await message.channel.send(f'Team2 : Leader = {key1}, [Total Score, Member] = {val1}')
+                return
+
+            await message.channel.send(f'Please select player, {currentServer.currentLeader}')
+            await message.channel.send(f'Available player list: {list(currentServer.remain_dic.keys())}')
+
 ###############################################################################################################
         
     #참가 스크립트
