@@ -20,6 +20,9 @@ class server:
         self.numTeams = 2
         self.unassigned = []
         self.server = 'na1'
+        self.teamsFSM = {}
+        self.remain_dic = {}
+        self.currentLeader = ''
 
 def teamScore(dic):
     total = 0
@@ -639,6 +642,66 @@ Debugging```\
         print_str += "```"
         await message.channel.send(print_str)
         await message.channel.send(f"diff in teams: {abs( team0_score- team1_score)}")
+
+    elif inputMessage.startswith('!team-lead'):
+        joinText = inputMessage.split() 
+        if len(joinText) < 3:
+            await message.channel.send('!team-lead leader <first leader-discord name-> <second leader-discord name->')
+            await message.channel.send('!team-lead select <joiner-league user name->')
+            return            
+
+        if joinText[1] == 'leader':
+            if len(message.mentions) != 2:
+                await message.channel.send('only available for two teams')
+                return
+
+            currentServer.remain_dic = dict(sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=True))
+
+            for mentioned in message.mentions:
+                currentServer.teamsFSM[mentioned.name] = [0,]
+
+            #make first team get the first shot
+            currentServer.currentLeader = message.mentions[0].name
+
+            await message.channel.send(f'select first player, {currentServer.currentLeader}')
+            await message.channel.send(f'Available player list: {list(currentServer.remain_dic.keys())}')
+        elif joinText[1] == 'select':
+            key0,key1 = currentServer.teamsFSM.keys()
+            val0 = currentServer.teamsFSM[key0]
+            val1 = currentServer.teamsFSM[key1]
+
+            selected_player = joinText[2:]
+            selected_player_str = ' '.join([str(elem) for elem in selected_player])
+
+            if (message.author.name != currentServer.currentLeader) : 
+                await message.channel.send(f'You are not team leader, {message.author.name}')
+                return              
+            if (selected_player_str not in list(currentServer.remain_dic.keys() )) :
+                #invalid username
+                await message.channel.send(f'This player is not in the list. List: {list(currentServer.remain_dic.keys())}')
+                return 
+                
+            #1. username need to insert to FSM, 2. score for the FSM should be added, 3. discord print      
+            currentServer.teamsFSM[message.author.name].append(selected_player_str)
+            currentServer.teamsFSM[message.author.name][0] += currentServer.remain_dic[selected_player_str][2] 
+            currentServer.remain_dic.pop(selected_player_str) 
+            await message.channel.send(f'player {selected_player_str} is added to fight team')
+            await message.channel.send(f'Your team score: {currentServer.teamsFSM[message.author.name][0]}')
+
+            if (currentServer.teamsFSM[key0][0] < currentServer.teamsFSM[key1][0]):
+                currentServer.currentLeader = key0
+            else:
+                currentServer.currentLeader = key1
+
+            if(currentServer.remain_dic == {}):
+                await message.channel.send(f'No more selectable player')
+                await message.channel.send(f'Team1 : Leader = {key0}, [Total Score, Member] = {val0}')
+                await message.channel.send(f'Team2 : Leader = {key1}, [Total Score, Member] = {val1}')
+                return
+
+            await message.channel.send(f'Please select player, {currentServer.currentLeader}')
+            await message.channel.send(f'Available player list: {list(currentServer.remain_dic.keys())}')
+
 ###############################################################################################################
         
     #참가 스크립트
