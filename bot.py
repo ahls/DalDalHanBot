@@ -426,10 +426,16 @@ async def on_message(message):
     #listing current players
     elif inputMessage == "!list":
         sorted_players = sorted(currentServer.players.items(), key=lambda x:x[1][2], reverse=False)
+        print_str = "**Player list:**```"
+        for index, playerL in enumerate(sorted_players):
+            #print (f"{index+1}. {playerL[0]}")
+            print_str +=  f"\n\t{index+1}. \t{playerL[0]}"
+        print_str +=  f"```"
         if (len(currentServer.players) != 0) :
-            await message.channel.send(sorted_players)
+            #await message.channel.send(sorted_players)
+            await message.channel.send(print_str)
         else :
-            await message.channel.send("No players")            
+            await message.channel.send("**No players**")            
         return
     #manual
     elif inputMessage == "!help":
