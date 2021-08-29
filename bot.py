@@ -439,6 +439,10 @@ async def on_message(message):
         return
     #manual
     elif inputMessage == "!help":
+        if discord.Permissions.send_messages == 0:
+            print(f"no permission for send messages: {discord.Permissions.send_messages} in server: {message.guild.name}")
+            return
+        print(f"have permission for send messages: {discord.Permissions.send_messages} in server: {message.guild.name}")
         text = \
 "Game Related:\n```\
 1. !참가 or join <username> <1st position> <2nd position>\n   (if has profile is made) !참가\n\
@@ -461,7 +465,7 @@ Debugging```\
 1. !test\n\
 2. !list\n\
 3. !ㅂㅂ or !quit```"
-
+        #await message.channel.send(discord.Permissions.send_messages)
         await message.channel.send(text)
 ##############################################################################################################
     #MAKE RANDOM PICK
