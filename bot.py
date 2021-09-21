@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import cassiopeia as cass
 import pandas as pd
 import numpy as np
+#from discord.ext.commands import bot_has_permissions, bot_has_role, MissingPermissions
 #df = pd.read_excel(r'fight.xlsx')
 rankValueSheet = np.genfromtxt("fight.csv",delimiter = ',')
 #print(rankValueSheet)
@@ -465,7 +466,7 @@ Debugging```\
 1. !test\n\
 2. !list\n\
 3. !ㅂㅂ or !quit```"
-        #await message.channel.send(discord.Permissions.send_messages)
+        await message.channel.send(discord.Permissions.send_messages)
         await message.channel.send(text)
 ##############################################################################################################
     #MAKE RANDOM PICK
@@ -717,7 +718,59 @@ Debugging```\
             await message.channel.send(f'Available player list: {list(currentServer.remain_dic.keys())}')
 
 ###############################################################################################################
-        
+    elif inputMessage.startswith('!search'):
+        #WORKING ON THIS -HAN
+        joinText = inputMessage.split()     
+        if len(joinText) <2:
+            await message.channel.send(f'Syntax Error: !search <username>')
+            return
+        userName = "".join(joinText[1:])
+        userName = userName.lower()
+        SummonerInfo,found = getSummonerInfo(userName,currentServer.server)
+        print(SummonerInfo['accountId'])
+        ddragon_ver = ((requests.get('https://ddragon.leagueoflegends.com/realms/na.json')).json())['n']['champion']
+        #print (ddragon_ver)
+        ddrangon = ((requests.get('http://ddragon.leagueoflegends.com/cdn/'+str(ddragon_ver)+'/data/en_US/champion.json')).json())['data']
+        #print (ddrangon)
+        champ_ddragon = [0]*900
+        for champname in ddrangon.values():
+            #print (champname)
+            #print (champname['name'])
+            #print (champname['key'])
+            champ_ddragon[int(champname['key'])] = champname['name']
+        #print (champ_ddragon[350])
+        match = (requests.get('https://'+currentServer.server+'.api.riotgames.com/lol/match/v4/matchlists/by-account/' + SummonerInfo['accountId'] + '?api_key=' + apikey)).json()
+        #summonerInfo = (requests.get('https://'+gameServer+'.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + userName + '?api_key=' + apikey)).json()
+        #print (match['matches'][0]['gameId'])
+        prev_match = (requests.get('https://'+currentServer.server+'.api.riotgames.com/lol/match/v4/matches/' + str(match['matches'][0]['gameId']) + '?api_key=' + apikey)).json()
+        #print (prev_match)
+        field_list = prev_match['teams']
+        for fields in field_list:
+            if fields['teamId'] == 100:
+                #print ('100 team')
+                await message.channel.send(f'Team : 1')
+                #print (fields['bans'])
+                msgstr = "```Ban Champs: "
+                for champ_list in fields['bans']:
+                    #print (champ_ddragon[champ_list['championId']])
+                    #print (champ_list['pickTurn'])
+                    banchampname = champ_ddragon[champ_list['championId']]
+                    msgstr = msgstr+'\t'+ str(banchampname)
+                    #await message.channel.send(f'Ban turn: {champ_list['pickTurn']})
+                msgstr = msgstr + '```'
+                await message.channel.send(f'{msgstr}')
+            if fields['teamId'] == 200:
+                #print ('200 team')
+                await message.channel.send(f'Team : 2')
+                msgstr = "```Ban Champs: "
+                #print (fields['bans'])
+                for champ_list in fields['bans']:
+                    #print (champ_ddragon[champ_list['championId']])
+                    #print (champ_list['pickTurn'])
+                    banchampname = champ_ddragon[champ_list['championId']]
+                    msgstr = msgstr+'\t'+ str(banchampname)
+                msgstr = msgstr + '```'
+                await message.channel.send(f'{msgstr}')
     #참가 스크립트
     elif inputMessage.startswith('!참가') or inputMessage.startswith("!join"):
         joinText = inputMessage.split()     
