@@ -466,7 +466,7 @@ Debugging```\
 1. !test\n\
 2. !list\n\
 3. !ㅂㅂ or !quit```"
-        await message.channel.send(discord.Permissions.send_messages)
+        #await message.channel.send(discord.Permissions.send_messages)
         await message.channel.send(text)
 ##############################################################################################################
     #MAKE RANDOM PICK
